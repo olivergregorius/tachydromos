@@ -1,0 +1,20 @@
+apiVersion: v2
+name: tachydromos
+description: Mail Suite on Kubernetes
+type: application
+version: 1.0.0
+keywords:
+  - mail
+  - smtp
+  - imap
+  - mta
+  - mda
+  - dovecot
+  - postfix
+  - sogo
+  - rspamd
+  - ldap
+home: https://github.com/olivergregorius/tachydromos
+maintainers:
+  - name: Oliver Gregorius
+    email: oliver@gregorius.dev
