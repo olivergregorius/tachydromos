@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-postfix
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.postfix.service.type }}
+  selector:
+    app.kubernetes.io/name: tachydromos-postfix
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: smtp
+      port: 25
+      targetPort: smtp
+      protocol: TCP
+      {{- if and (eq .Values.postfix.service.type "NodePort") (not (empty .Values.postfix.service.nodePorts.smtp)) }}
+      nodePort: {{ .Values.postfix.service.nodePorts.smtp }}
+      {{- end }}
+    - name: submission
+      port: 587
+      targetPort: submission
+      protocol: TCP
+      {{- if and (eq .Values.postfix.service.type "NodePort") (not (empty .Values.postfix.service.nodePorts.submission)) }}
+      nodePort: {{ .Values.postfix.service.nodePorts.submission }}
+      {{- end }}

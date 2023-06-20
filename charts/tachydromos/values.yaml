@@ -1,3 +1,66 @@
-global:
-  imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+imagePullSecrets: []
 
+hostname: testmail.gregorius.tech
+
+postfix:
+  image:
+    repository: docker.io/olivergregorius/postfix
+    tag: 3.8.1-alpha
+    pullPolicy: Always
+  replicas: 1
+  podAnnotations: {}
+  podSecurityContext: {}
+  resources:
+    requests:
+      memory: 32Mi
+      cpu: 50m
+    limits:
+      memory: 64Mi
+      cpu: 100m
+  service:
+    type: NodePort
+    nodePorts:
+      smtp: ""
+      submission: ""
+  enableProxyProtocol: true
+  ldap:
+    external: false
+    host: ""
+    port: ""
+    bindDn: ""
+    bindPassword: "" # TODO existing secret
+    searchBase: ""
+    accountsFilter: ""
+    accountsAttribute: ""
+    aliasesFilter: ""
+    aliasesAttribute: ""
+    domainFilter: ""
+    domainAttribute: ""
+    recipientAccessFilter: ""
+    recipientAccessAttribute: ""
+    senderAccessFilter: ""
+    senderAccessAttribute: ""
+  heloWhitelist: ""
+  postscreenWhitelist: ""
+  ptrWhitelist: ""
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: zerossl-production
+    nginx.ingress.kubernetes.io/proxy-body-size: 16M
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "64"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "512k"
+  paths:
+    - path: /SOGo
+      serviceName: sogo
+      servicePort: 8080
+  secretName: tachydromos-certificate
+
+nodeSelector: {}
+affinity: {}
+tolerations: {}

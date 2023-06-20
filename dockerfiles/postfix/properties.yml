@@ -1,0 +1,3 @@
+---
+version: 3.8.1-alpha
+arch: linux/amd64,linux/arm64
