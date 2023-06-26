@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-openldap
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.openldap.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tachydromos-openldap
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: {{ include (print .Template.BasePath "/openldap/configmap-openldap.yaml") . | sha256sum }}
+        checksum/configmap-bootstrap: {{ include (print .Template.BasePath "/openldap/configmap-openldap-bootstrap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print .Template.BasePath "/openldap/secret-openldap.yaml") . | sha256sum }}
+        {{- with .Values.postfix.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/name: tachydromos-openldap
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/version: {{ .Values.openldap.image.tag | quote }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tachydromos.fullname" . }}
+      securityContext:
+        {{- toYaml .Values.openldap.podSecurityContext | nindent 8 }}
+      containers:
+        - name: openldap
+          image: "{{ .Values.openldap.image.repository }}:{{ .Values.openldap.image.tag }}"
+          imagePullPolicy: {{ .Values.openldap.image.pullPolicy }}
+          ports:
+            - name: ldap
+              containerPort: 1389
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "tachydromos.fullname" . }}-openldap
+            - secretRef:
+                name: {{ include "tachydromos.fullname" . }}-openldap
+          resources:
+            {{- toYaml .Values.openldap.resources | nindent 12 }}
+          volumeMounts:
+            - name: schemas
+              mountPath: /bootstrap/schemas
+            - name: bootstrap
+              mountPath: /docker-entrypoint-initdb.d
+            {{- if .Values.openldap.persistence.enabled }}
+            - name: data
+              mountPath: /bitnami/openldap
+            {{- end }}
+      volumes:
+        - name: schemas
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-openldap-schemas
+        - name: bootstrap
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-openldap-bootstrap
+        {{- if .Values.openldap.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "tachydromos.fullname" . }}-openldap
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

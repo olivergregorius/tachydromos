@@ -6,6 +6,7 @@ RUN apk add --update-cache \
     postfix=$POSTFIX_VERSION \
     postfix-ldap=$POSTFIX_VERSION \
     ca-certificates \
+    envsubst \
     && rm -rf /var/cache/apk/*
 
 # Main process must run as root - needs permissions for spawning new processes and binding to ports < 1024

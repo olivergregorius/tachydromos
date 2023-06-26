@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-openldap-bootstrap
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+data:
+  bootstrap.sh: |
+    #!/usr/bin/env bash
+
+    set -o errexit
+    set -o nounset
+    set -o pipefail
+
+    . /opt/bitnami/scripts/libopenldap.sh
+
+    export LDAP_ADMIN_DN="${LDAP_ADMIN_USERNAME/#/cn=},${LDAP_ROOT}"
+    export LDAP_BIND_DN="${LDAP_BINDDN_USERNAME/#/cn=},${LDAP_ROOT}"
+    export LDAP_ENCRYPTED_BINDDN_PASSWORD="$(echo -n $LDAP_BINDDN_PASSWORD | slappasswd -n -T /dev/stdin)"
+
+    cat > "/tmp/root.ldif" << EOF
+    dn: $LDAP_ROOT
+    objectClass: dcObject
+    objectClass: organization
+    objectClass: top
+    dc: tachydromos
+    o: tachydromos
+    EOF
+
+    cat > "/tmp/binddn.ldif" << EOF
+    dn: $LDAP_BIND_DN
+    changetype: add
+    objectClass: organizationalRole
+    objectClass: simpleSecurityObject
+    objectClass: top
+    cn: $LDAP_BINDDN_USERNAME
+    userPassword: $LDAP_ENCRYPTED_BINDDN_PASSWORD
+    EOF
+
+    cat > "/tmp/acl.ldif" << EOF
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    add: olcAccess
+    olcAccess: {0}to attrs=userPassword by self write by anonymous auth by * none
+    -
+    add: olcAccess
+    olcAccess: {1}to * by dn="$LDAP_BIND_DN" read by * none
+    EOF
+
+    cat > "/tmp/domains.ldif" << EOF
+    dn: ou=domains,${LDAP_ROOT}
+    changetype: add
+    objectClass: organizationalUnit
+    objectClass: top
+    ou: domains
+    EOF
+
+    cat > "/tmp/users.ldif" << EOF
+    dn: ou=users,${LDAP_ROOT}
+    changetype: add
+    objectClass: organizationalUnit
+    objectClass: top
+    ou: users
+    EOF
+
+    ldap_start_bg
+    ldapadd -x -D $LDAP_ADMIN_DN -w $LDAP_ADMIN_PASSWORD -H ldapi:/// -f /tmp/root.ldif
+    ldapadd -x -D $LDAP_ADMIN_DN -w $LDAP_ADMIN_PASSWORD -H ldapi:/// -f /tmp/binddn.ldif
+    ldapadd -Y EXTERNAL -H ldapi:/// -f /tmp/acl.ldif
+    ldapadd -x -D $LDAP_ADMIN_DN -w $LDAP_ADMIN_PASSWORD -H ldapi:/// -f /tmp/domains.ldif
+    ldapadd -x -D $LDAP_ADMIN_DN -w $LDAP_ADMIN_PASSWORD -H ldapi:/// -f /tmp/users.ldif
+    ldap_stop

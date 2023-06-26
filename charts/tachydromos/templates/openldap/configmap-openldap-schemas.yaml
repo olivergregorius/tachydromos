@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-openldap-schemas
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+data:
+  tachydromos-schema.ldif: |
+    # Schema for mail
+    dn: cn=tachydromos,cn=schema,cn=config
+    objectClass: olcSchemaConfig
+    cn: tachydromos
+    olcAttributeTypes: {0}( 2.25.208731448656550482017954409186041478742.1.2.1 NAME 'mailActive' DESC 'Mail Active Flag' EQUALITY booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
+    olcAttributeTypes: {1}( 2.25.208731448656550482017954409186041478742.1.2.2 NAME 'mailSendOnly' DESC 'Mail Send Only Flag' EQUALITY booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
+    olcAttributeTypes: {2}( 2.25.208731448656550482017954409186041478742.1.2.3 NAME 'mailAlias' DESC 'Mail Alias Address' EQUALITY caseIgnoreMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256} )
+    olcAttributeTypes: {3}( 2.25.208731448656550482017954409186041478742.1.2.4 NAME 'mailQuotaMb' DESC 'Mail Quota In MB' EQUALITY integerMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+    olcAttributeTypes: {4}( 2.25.208731448656550482017954409186041478742.1.2.5 NAME 'mailSuperUser' DESC 'Mail Super User flag' EQUALITY booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
+    olcObjectClasses: {0}( 2.25.208731448656550482017954409186041478742.1.1.1 NAME 'mailAccount' DESC 'Mail Account' AUXILIARY MUST ( mailActive $ mailSendOnly $ mailQuotaMb $ mailSuperUser ) MAY mailAlias )

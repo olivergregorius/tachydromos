@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-openldap
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+data:
+  LDAP_ROOT: dc=tachydromos,dc=org
+  LDAP_ADMIN_USERNAME: admin
+  LDAP_BINDDN_USERNAME: reader
+  LDAP_SKIP_DEFAULT_TREE: "yes"
+  LDAP_CUSTOM_SCHEMA_DIR: /bootstrap/schemas
