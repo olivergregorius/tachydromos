@@ -15,6 +15,7 @@ spec:
       annotations:
         checksum/configmap: {{ include (print .Template.BasePath "/openldap/configmap-openldap.yaml") . | sha256sum }}
         checksum/configmap-bootstrap: {{ include (print .Template.BasePath "/openldap/configmap-openldap-bootstrap.yaml") . | sha256sum }}
+        checksum/configmap-schemas: {{ include (print .Template.BasePath "/openldap/configmap-openldap-schemas.yaml") . | sha256sum }}
         checksum/secret: {{ include (print .Template.BasePath "/openldap/secret-openldap.yaml") . | sha256sum }}
         {{- with .Values.postfix.podAnnotations }}
         {{- toYaml . | nindent 8 }}

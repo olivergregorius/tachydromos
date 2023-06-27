@@ -14,8 +14,10 @@ spec:
     metadata:
       annotations:
         checksum/configmap: {{ include (print .Template.BasePath "/postfix/configmap-postfix.yaml") . | sha256sum }}
+        checksum/configmap-ldap: {{ include (print .Template.BasePath "/postfix/configmap-postfix-ldap.yaml") . | sha256sum }}
         checksum/configmap-bootstrap: {{ include (print .Template.BasePath "/postfix/configmap-postfix-bootstrap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print .Template.BasePath "/postfix/secret-postfix.yaml") . | sha256sum }}
+        checksum/configmap-openldap: {{ include (print .Template.BasePath "/openldap/configmap-openldap.yaml") . | sha256sum }}
+        checksum/secret-openldap: {{ include (print .Template.BasePath "/openldap/secret-openldap.yaml") . | sha256sum }}
         {{- with .Values.postfix.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -61,8 +63,8 @@ spec:
               subPath: bootstrap.sh
             - name: configmap
               mountPath: /mnt/configmap
-            - name: secret
-              mountPath: /mnt/secret
+            - name: configmap-ldap
+              mountPath: /mnt/configmap-ldap
             - name: configvolume
               mountPath: /mnt/configvolume
       containers:
@@ -93,9 +95,9 @@ spec:
         - name: configmap
           configMap:
             name: {{ include "tachydromos.fullname" . }}-postfix
-        - name: secret
-          secret:
-            secretName: {{ include "tachydromos.fullname" . }}-postfix
+        - name: configmap-ldap
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-postfix-ldap
         - name: configvolume
           emptyDir: {}
         - name: certs

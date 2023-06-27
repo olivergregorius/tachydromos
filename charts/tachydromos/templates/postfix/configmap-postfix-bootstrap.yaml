@@ -16,7 +16,7 @@ data:
     cp -LR /mnt/configmap/* /mnt/configvolume/
     mkdir /mnt/configvolume/ldap
     export LDAP_BINDDN="cn=${LDAP_BINDDN_USERNAME},${LDAP_ROOT}"
-    find /mnt/secret -type f -iname '*.cf' -exec sh -c "envsubst < {} > /mnt/configvolume/ldap/\`basename {}\`" \;
+    find /mnt/configmap-ldap -type f -iname '*.cf' -exec sh -c "envsubst < {} > /mnt/configvolume/ldap/\`basename {}\`" \;
     postmap /mnt/configvolume/helo_access
     postmap /mnt/configvolume/postscreen_access
     postmap /mnt/configvolume/without_ptr
