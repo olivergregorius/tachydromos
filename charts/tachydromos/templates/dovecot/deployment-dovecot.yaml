@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-dovecot
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.dovecot.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tachydromos-dovecot
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot.yaml") . | sha256sum }}
+        checksum/configmap-confd: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-confd.yaml") . | sha256sum }}
+        checksum/configmap-sieve: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-sieve.yaml") . | sha256sum }}
+        checksum/configmap-msmtp: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-msmtp.yaml") . | sha256sum }}
+        checksum/configmap-bootstrap: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-bootstrap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print .Template.BasePath "/dovecot/secret-dovecot.yaml") . | sha256sum }}
+        {{- with .Values.dovecot.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/name: tachydromos-dovecot
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/version: {{ .Values.dovecot.image.tag | quote }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tachydromos.fullname" . }}
+      securityContext:
+        {{- toYaml .Values.dovecot.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: dovecot-init
+          image: "{{ .Values.dovecot.image.repository }}:{{ .Values.dovecot.image.tag }}"
+          imagePullPolicy: {{ .Values.dovecot.image.pullPolicy }}
+          env:
+            - name: LDAP_ROOT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "tachydromos.fullname" . }}-openldap
+                  key: LDAP_ROOT
+            - name: LDAP_BINDDN_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "tachydromos.fullname" . }}-openldap
+                  key: LDAP_BINDDN_USERNAME
+            - name: LDAP_BINDDN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "tachydromos.fullname" . }}-openldap
+                  key: LDAP_BINDDN_PASSWORD
+            - name: POSTMASTER_EMAIL
+              value: {{ .Values.dovecot.postmasterEmail }}
+            - name: SUPERUSER_USERNAME
+              value: {{ .Values.dovecot.superuserUsername }}
+            - name: SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "tachydromos.fullname" . }}-dovecot
+                  key: SUPERUSER_PASSWORD
+            - name: RSPAMD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "tachydromos.fullname" . }}-dovecot
+                  key: RSPAMD_PASSWORD
+          resources:
+            {{- toYaml .Values.dovecot.resources | nindent 12 }}
+          command:
+            - /opt/bootstrap.sh
+          volumeMounts:
+            - name: bootstrap
+              mountPath: /opt/bootstrap.sh
+              subPath: bootstrap.sh
+            - name: configmap
+              mountPath: /mnt/configmap
+            - name: configmap-confd
+              mountPath: /mnt/configmap-confd
+            - name: configmap-sieve
+              mountPath: /mnt/configmap-sieve
+            - name: configmap-msmtp
+              mountPath: /mnt/configmap-msmtp
+            - name: configvolume
+              mountPath: /mnt/configvolume
+            - name: data
+              mountPath: /mnt/data
+      containers:
+        - name: dovecot
+          image: "{{ .Values.dovecot.image.repository }}:{{ .Values.dovecot.image.tag }}"
+          imagePullPolicy: {{ .Values.dovecot.image.pullPolicy }}
+          ports:
+            - name: lmtp
+              containerPort: 24
+              protocol: TCP
+            - name: imap
+              containerPort: 143
+              protocol: TCP
+            - name: sasl
+              containerPort: 3659
+              protocol: TCP
+            - name: sieve
+              containerPort: 4190
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.dovecot.resources | nindent 12 }}
+          volumeMounts:
+            - name: configvolume
+              mountPath: /etc/dovecot
+              readOnly: true
+            - name: data
+              mountPath: /srv/dovecot
+      volumes:
+        - name: bootstrap
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-dovecot-bootstrap
+            defaultMode: 0755
+        - name: configmap
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-dovecot
+        - name: configmap-confd
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-dovecot-confd
+        - name: configmap-sieve
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-dovecot-sieve
+        - name: configmap-msmtp
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-dovecot-msmtp
+        - name: configvolume
+          emptyDir: {}
+        - name: data
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-dovecot-confd
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+data:
+  10-auth.conf: |
+    disable_plaintext_auth = yes
+    login_trusted_networks = 10.42.0.0/16
+    auth_mechanisms        = plain login
+  10-ldap.conf: |
+    passdb {
+      driver = ldap
+      args   = /etc/dovecot/dovecot-ldap.conf
+    }
+
+      userdb {
+      driver = ldap
+      args   = /etc/dovecot/dovecot-ldap.conf
+    }
+  10-logging.conf: |
+    log_path       = /dev/null
+    info_log_path  = /dev/null
+    debug_log_path = /dev/null
+    auth_debug = no
+  10-mail.conf: |
+    mail_uid              = vmail
+    mail_gid              = vmail
+    mail_privileged_group = vmail
+    mail_home             = /srv/dovecot/mailboxes/%d/%n
+    mail_location         = maildir:~/mail:LAYOUT=fs
+
+    namespace inbox {
+      inbox = yes
+    }
+  10-master.conf: |
+    service imap-login {
+      inet_listener imap {
+        port = 143
+      }
+    }
+
+    service lmtp {
+      inet_listener lmtp {
+        port = 24
+      }
+    }
+
+    service auth {
+      inet_listener auth {
+        port = 3659
+      }
+      unix_listener auth-userdb {
+        mode  = 0660
+        user  = vmail
+        group = vmail
+      }
+    }
+
+    service managesieve-login {
+        inet_listener sieve {
+            port = 4190
+        }
+    }
+  10-protocol.conf: |
+    protocols = imap lmtp sieve
+    postmaster_address = $POSTMASTER_EMAIL
+
+    sendmail_path = /usr/bin/msmtp
+
+    protocol imap {
+      mail_plugins                = $mail_plugins quota imap_quota imap_sieve
+      mail_max_userip_connections = 20
+      imap_idle_notify_interval   = 29 mins
+    }
+
+    protocol lmtp {
+      mail_plugins       = $mail_plugins sieve
+    }
+  10-mailboxes.conf: |
+    namespace inbox {
+      mailbox Drafts {
+        auto        = subscribe
+        special_use = \Drafts
+      }
+      mailbox Sent {
+        auto        = subscribe
+        special_use = \Sent
+      }
+      mailbox Junk {
+        auto        = subscribe
+        special_use = \Junk
+      }
+      mailbox Trash {
+        auto        = subscribe
+        special_use = \Trash
+      }
+    }
+  10-imap.conf: |
+    protocol imap {
+
+    }
+  10-plugins.conf: |
+    plugin {
+      # Quota
+      quota                  = maildir
+      quota_exceeded_message = User %u has exhausted allowed storage space.
+
+      # Sieve
+      sieve_plugins           = sieve_imapsieve sieve_extprograms
+      sieve_before            = /srv/dovecot/sieve/global/spam-global.sieve
+      sieve                   = file:/srv/dovecot/sieve/%d/%n/scripts;active=/srv/dovecot/sieve/%d/%n/active-script.sieve
+      sieve_pipe_bin_dir      = /srv/dovecot/sieve/global
+      sieve_global_extensions = +vnd.dovecot.pipe
+
+      # Spam learning
+      # From elsewhere to Spam folder
+      imapsieve_mailbox1_name   = Junk
+      imapsieve_mailbox1_causes = COPY
+      imapsieve_mailbox1_before = file:/srv/dovecot/sieve/global/learn-spam.sieve
+
+      # From Spam folder to elsewhere
+      imapsieve_mailbox2_name   = *
+      imapsieve_mailbox2_from   = Junk
+      imapsieve_mailbox2_causes = COPY
+      imapsieve_mailbox2_before = file:/srv/dovecot/sieve/global/learn-ham.sieve
+    }
