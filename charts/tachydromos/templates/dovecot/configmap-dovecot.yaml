@@ -5,19 +5,6 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
-  dovecot.conf: |
-    !include conf.d/*.conf
-  dovecot-ldap.conf: |
-    hosts     = tachydromos-openldap:1389
-    auth_bind = yes
-    dn        = $LDAP_BINDDN
-    dnpass    = $LDAP_BINDDN_PASSWORD
-    base      = ou=users,${LDAP_ROOT}
-    scope     = subtree
-    deref     = never
-    pass_filter = (&(objectClass=mailAccount)(mailActive=TRUE)(mail=%u))
-    pass_attrs  = mail=user
-    iterate_filter = (&(objectClass=mailAccount)(mailActive=TRUE)
-    iterate_attrs  = mail=user
-    user_filter = (&(objectClass=mailAccount)(mailActive=TRUE)(mail=%u))
-    user_attrs  = mailQuotaMb=quota_rule=*:bytes=%$M
+  config: |
+    postmasterEmail: {{ .Values.dovecot.postmasterEmail }}
+    superuserUsername: {{ .Values.dovecot.superuserUsername }}

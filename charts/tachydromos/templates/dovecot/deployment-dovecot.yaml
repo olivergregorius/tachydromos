@@ -14,11 +14,11 @@ spec:
     metadata:
       annotations:
         checksum/configmap: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot.yaml") . | sha256sum }}
-        checksum/configmap-confd: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-confd.yaml") . | sha256sum }}
-        checksum/configmap-sieve: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-sieve.yaml") . | sha256sum }}
-        checksum/configmap-msmtp: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-msmtp.yaml") . | sha256sum }}
-        checksum/configmap-bootstrap: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-bootstrap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print .Template.BasePath "/dovecot/secret-dovecot.yaml") . | sha256sum }}
+        checksum/configmap-templates: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-templates.yaml") . | sha256sum }}
+        checksum/configmap-entrypoint: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-entrypoint.yaml") . | sha256sum }}
+        checksum/configmap-openldap: {{ include (print .Template.BasePath "/openldap/configmap-openldap.yaml") . | sha256sum }}
+        checksum/secret-openldap: {{ include (print .Template.BasePath "/openldap/secret-openldap.yaml") . | sha256sum }}
         {{- with .Values.dovecot.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -34,64 +34,12 @@ spec:
       serviceAccountName: {{ include "tachydromos.fullname" . }}
       securityContext:
         {{- toYaml .Values.dovecot.podSecurityContext | nindent 8 }}
-      initContainers:
-        - name: dovecot-init
-          image: "{{ .Values.dovecot.image.repository }}:{{ .Values.dovecot.image.tag }}"
-          imagePullPolicy: {{ .Values.dovecot.image.pullPolicy }}
-          env:
-            - name: LDAP_ROOT
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "tachydromos.fullname" . }}-openldap
-                  key: LDAP_ROOT
-            - name: LDAP_BINDDN_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "tachydromos.fullname" . }}-openldap
-                  key: LDAP_BINDDN_USERNAME
-            - name: LDAP_BINDDN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "tachydromos.fullname" . }}-openldap
-                  key: LDAP_BINDDN_PASSWORD
-            - name: POSTMASTER_EMAIL
-              value: {{ .Values.dovecot.postmasterEmail }}
-            - name: SUPERUSER_USERNAME
-              value: {{ .Values.dovecot.superuserUsername }}
-            - name: SUPERUSER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "tachydromos.fullname" . }}-dovecot
-                  key: SUPERUSER_PASSWORD
-            - name: RSPAMD_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "tachydromos.fullname" . }}-dovecot
-                  key: RSPAMD_PASSWORD
-          resources:
-            {{- toYaml .Values.dovecot.resources | nindent 12 }}
-          command:
-            - /opt/bootstrap.sh
-          volumeMounts:
-            - name: bootstrap
-              mountPath: /opt/bootstrap.sh
-              subPath: bootstrap.sh
-            - name: configmap
-              mountPath: /mnt/configmap
-            - name: configmap-confd
-              mountPath: /mnt/configmap-confd
-            - name: configmap-sieve
-              mountPath: /mnt/configmap-sieve
-            - name: configmap-msmtp
-              mountPath: /mnt/configmap-msmtp
-            - name: configvolume
-              mountPath: /mnt/configvolume
-            - name: data
-              mountPath: /mnt/data
       containers:
         - name: dovecot
           image: "{{ .Values.dovecot.image.repository }}:{{ .Values.dovecot.image.tag }}"
           imagePullPolicy: {{ .Values.dovecot.image.pullPolicy }}
+          command:
+            - /entrypoint.py
           ports:
             - name: lmtp
               containerPort: 24
@@ -108,32 +56,49 @@ spec:
           resources:
             {{- toYaml .Values.dovecot.resources | nindent 12 }}
           volumeMounts:
-            - name: configvolume
-              mountPath: /etc/dovecot
-              readOnly: true
+            - name: templates
+              mountPath: /mnt/templates
+            - name: config
+              mountPath: /mnt/config
+              subPath: config
+            - name: secret
+              mountPath: /mnt/secrets
+              subPath: secrets
+            - name: ldap-config
+              mountPath: /mnt/ldap-config
+              subPath: config
+            - name: ldap-secret
+              mountPath: /mnt/ldap-secrets
+              subPath: secrets
+            - name: entrypoint
+              mountPath: /entrypoint.py
+              subPath: entrypoint.py
             - name: data
               mountPath: /srv/dovecot
       volumes:
-        - name: bootstrap
+        - name: templates
           configMap:
-            name: {{ include "tachydromos.fullname" . }}-dovecot-bootstrap
-            defaultMode: 0755
-        - name: configmap
+            name: {{ include "tachydromos.fullname" . }}-dovecot-templates
+        - name: config
           configMap:
             name: {{ include "tachydromos.fullname" . }}-dovecot
-        - name: configmap-confd
+        - name: secret
+          secret:
+            secretName: {{ include "tachydromos.fullname" . }}-dovecot
+            defaultMode: 0400
+        - name: ldap-config
           configMap:
-            name: {{ include "tachydromos.fullname" . }}-dovecot-confd
-        - name: configmap-sieve
+            name: {{ include "tachydromos.fullname" . }}-openldap-shared
+        - name: ldap-secret
+          secret:
+            secretName: {{ include "tachydromos.fullname" . }}-openldap-shared
+            defaultMode: 0400
+        - name: entrypoint
           configMap:
-            name: {{ include "tachydromos.fullname" . }}-dovecot-sieve
-        - name: configmap-msmtp
-          configMap:
-            name: {{ include "tachydromos.fullname" . }}-dovecot-msmtp
-        - name: configvolume
-          emptyDir: {}
+            name: {{ include "tachydromos.fullname" . }}-dovecot-entrypoint
+            defaultMode: 0755
         - name: data
-          emptyDir: {}
+          emptyDir: {} # TODO PVC
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

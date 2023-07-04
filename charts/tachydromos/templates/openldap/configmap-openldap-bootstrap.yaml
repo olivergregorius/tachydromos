@@ -14,8 +14,8 @@ data:
 
     . /opt/bitnami/scripts/libopenldap.sh
 
-    export LDAP_ADMIN_DN="${LDAP_ADMIN_USERNAME/#/cn=},${LDAP_ROOT}"
-    export LDAP_BIND_DN="${LDAP_BINDDN_USERNAME/#/cn=},${LDAP_ROOT}"
+    export LDAP_ADMIN_DN="${LDAP_ADMIN_ATTRIBUTE}=${LDAP_ADMIN_USERNAME},${LDAP_ROOT}"
+    export LDAP_BIND_DN="${LDAP_BINDDN_ATTRIBUTE}=${LDAP_BINDDN_USERNAME},${LDAP_ROOT}"
     export LDAP_ENCRYPTED_BINDDN_PASSWORD="$(echo -n $LDAP_BINDDN_PASSWORD | slappasswd -n -T /dev/stdin)"
 
     cat > "/tmp/root.ldif" << EOF

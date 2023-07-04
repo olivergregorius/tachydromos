@@ -7,6 +7,22 @@ metadata:
 data:
   LDAP_ROOT: dc=tachydromos,dc=org
   LDAP_ADMIN_USERNAME: admin
+  LDAP_ADMIN_ATTRIBUTE: cn
   LDAP_BINDDN_USERNAME: reader
+  LDAP_BINDDN_ATTRIBUTE: cn
   LDAP_SKIP_DEFAULT_TREE: "yes"
   LDAP_CUSTOM_SCHEMA_DIR: /bootstrap/schemas
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-openldap-shared
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+data:
+  config: |
+    ldapRoot: dc=tachydromos,dc=org
+    ldapAdminUsername: admin
+    ldapAdminAttribute: cn
+    ldapBinddnUsername: reader
+    ldapBinddnAttribute: cn

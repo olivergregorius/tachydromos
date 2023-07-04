@@ -8,10 +8,12 @@ RUN apk add --update-cache \
     dovecot-ldap=$DOVECOT_VERSION \
     dovecot-pigeonhole-plugin=$DOVECOT_VERSION \
     msmtp \
-    envsubst \
+    python3 \
+    py3-pip \
     && rm -rf /var/cache/apk/*
 
-RUN addgroup -g 5000 -S vmail \
+RUN pip3 install jinja2 pyyaml \
+    && addgroup -g 5000 -S vmail \
     && adduser -u 5000 -h /srv/dovecot -G vmail -S vmail \
     && rm -r /etc/dovecot/conf.d/*
 
@@ -21,5 +23,5 @@ USER root
 # LMTP | IMAP | SASL | Sieve
 EXPOSE 24 143 3659 4190
 
-ENTRYPOINT ["/usr/sbin/dovecot"]
-CMD ["-c", "/etc/dovecot/dovecot.conf", "-F"]
+ENTRYPOINT [""]
+CMD [""]
