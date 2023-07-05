@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "tachydromos.fullname" . }}-dovecot-entrypoint
+  name: {{ include "tachydromos.fullname" . }}-postfix-entrypoint
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
@@ -10,6 +10,7 @@ data:
     import logging
     import os
     import shutil
+    import subprocess
     import yaml
 
     import jinja2 as j2
@@ -53,8 +54,6 @@ data:
       config = {}
       with open('/mnt/config', 'r') as filestream:
         config.update(yaml.safe_load(filestream))
-      with open('/mnt/secrets', 'r') as filestream:
-        config.update(yaml.safe_load(filestream))
       with open('/mnt/ldap-config', 'r') as filestream:
         config.update(yaml.safe_load(filestream))
       with open('/mnt/ldap-secrets', 'r') as filestream:
@@ -95,42 +94,29 @@ data:
     j2Env = j2.Environment(loader=j2.FileSystemLoader('/mnt/templates'), finalize=j2Finalize, keep_trailing_newline=True)
 
 
-    configDir = '/etc/dovecot/'
-    confdDir = configDir + 'conf.d/'
+    configDir = '/etc/postfix/'
+    ldapDir = configDir + 'ldap/'
+    if not os.path.isdir(ldapDir):
+      os.mkdir(ldapDir)
+      set_permissions(ldapDir, False)
 
-    workDir = '/srv/dovecot/'
-    set_permissions(workDir, False, 'vmail', 'vmail', dirmode=0o700)
 
-    sieveDir = workDir + 'sieve/'
-    if not os.path.isdir(sieveDir):
-      os.mkdir(sieveDir)
-      set_permissions(sieveDir, False, 'vmail', 'vmail', dirmode=0o700)
+    generate_config('main.cf.j2', configDir)
+    generate_config('master.cf.j2', configDir)
+    generate_config('submission_header_cleanup.j2', configDir)
+    generate_config('postscreen_access.j2', configDir)
+    generate_config('helo_access.j2', configDir)
+    generate_config('without_ptr.j2', configDir)
 
-    sieveGlobalDir = sieveDir + 'global/'
-    if not os.path.isdir(sieveGlobalDir):
-      os.mkdir(sieveGlobalDir)
-      set_permissions(sieveGlobalDir, False, 'vmail', 'vmail', dirmode=0o700)
+    generate_config('accounts.cf.j2', ldapDir)
+    generate_config('aliases.cf.j2', ldapDir)
+    generate_config('domains.cf.j2', ldapDir)
+    generate_config('recipient-access.cf.j2', ldapDir)
+    generate_config('sender-login-maps.cf.j2', ldapDir)
 
-    generate_config('msmtprc.j2', '/etc/')
-
-    generate_config('dovecot.conf.j2', configDir)
-    generate_config('dovecot-ldap.conf.j2', configDir)
-
-    generate_config('10-auth.conf.j2', confdDir)
-    generate_config('10-ldap.conf.j2', confdDir)
-    generate_config('10-logging.conf.j2', confdDir)
-    generate_config('10-mail.conf.j2', confdDir)
-    generate_config('10-master.conf.j2', confdDir)
-    generate_config('10-protocol.conf.j2', confdDir)
-    generate_config('15-mailboxes.conf.j2', confdDir)
-    generate_config('20-imap.conf.j2', confdDir)
-    generate_config('90-plugins.conf.j2', confdDir)
-
-    generate_config('spam-global.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o600)
-    generate_config('learn-ham.sh.j2', sieveGlobalDir, 'vmail', 'vmail', 0o700)
-    generate_config('learn-ham.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o600)
-    generate_config('learn-spam.sh.j2', sieveGlobalDir, 'vmail', 'vmail', 0o700)
-    generate_config('learn-spam.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o600)
+    subprocess.run(['postmap', configDir + 'postscreen_access'])
+    subprocess.run(['postmap', configDir + 'helo_access'])
+    subprocess.run(['postmap', configDir + 'without_ptr'])
 
     logger.info('Setup completed, starting application...')
-    os.execv('/usr/sbin/dovecot', ['dovecot', '-c', configDir + 'dovecot.conf', '-F'])
+    os.execv('/usr/sbin/postfix', ['postfix', '-c', configDir, 'start-fg'])

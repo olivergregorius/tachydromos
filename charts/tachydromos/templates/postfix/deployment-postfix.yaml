@@ -14,8 +14,8 @@ spec:
     metadata:
       annotations:
         checksum/configmap: {{ include (print .Template.BasePath "/postfix/configmap-postfix.yaml") . | sha256sum }}
-        checksum/configmap-ldap: {{ include (print .Template.BasePath "/postfix/configmap-postfix-ldap.yaml") . | sha256sum }}
-        checksum/configmap-bootstrap: {{ include (print .Template.BasePath "/postfix/configmap-postfix-bootstrap.yaml") . | sha256sum }}
+        checksum/configmap-templates: {{ include (print .Template.BasePath "/postfix/configmap-postfix-templates.yaml") . | sha256sum }}
+        checksum/configmap-entrypoint: {{ include (print .Template.BasePath "/postfix/configmap-postfix-entrypoint.yaml") . | sha256sum }}
         checksum/configmap-openldap: {{ include (print .Template.BasePath "/openldap/configmap-openldap.yaml") . | sha256sum }}
         checksum/secret-openldap: {{ include (print .Template.BasePath "/openldap/secret-openldap.yaml") . | sha256sum }}
         {{- with .Values.postfix.podAnnotations }}
@@ -33,44 +33,12 @@ spec:
       serviceAccountName: {{ include "tachydromos.fullname" . }}
       securityContext:
         {{- toYaml .Values.postfix.podSecurityContext | nindent 8 }}
-      initContainers:
-        - name: postfix-init
-          image: "{{ .Values.postfix.image.repository }}:{{ .Values.postfix.image.tag }}"
-          imagePullPolicy: {{ .Values.postfix.image.pullPolicy }}
-          env:
-            - name: LDAP_ROOT
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "tachydromos.fullname" . }}-openldap
-                  key: LDAP_ROOT
-            - name: LDAP_BINDDN_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "tachydromos.fullname" . }}-openldap
-                  key: LDAP_BINDDN_USERNAME
-            - name: LDAP_BINDDN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "tachydromos.fullname" . }}-openldap
-                  key: LDAP_BINDDN_PASSWORD
-          resources:
-            {{- toYaml .Values.postfix.resources | nindent 12 }}
-          command:
-            - /opt/bootstrap.sh
-          volumeMounts:
-            - name: bootstrap
-              mountPath: /opt/bootstrap.sh
-              subPath: bootstrap.sh
-            - name: configmap
-              mountPath: /mnt/configmap
-            - name: configmap-ldap
-              mountPath: /mnt/configmap-ldap
-            - name: configvolume
-              mountPath: /mnt/configvolume
       containers:
         - name: postfix
           image: "{{ .Values.postfix.image.repository }}:{{ .Values.postfix.image.tag }}"
           imagePullPolicy: {{ .Values.postfix.image.pullPolicy }}
+          command:
+            - /entrypoint.py
           ports:
             - name: smtp
               containerPort: {{ ternary 26 25 .Values.postfix.enableProxyProtocol }}
@@ -81,25 +49,41 @@ spec:
           resources:
             {{- toYaml .Values.postfix.resources | nindent 12 }}
           volumeMounts:
-            - name: configvolume
-              mountPath: /etc/postfix
-              readOnly: true
+            - name: templates
+              mountPath: /mnt/templates
+            - name: config
+              mountPath: /mnt/config
+              subPath: config
+            - name: ldap-config
+              mountPath: /mnt/ldap-config
+              subPath: config
+            - name: ldap-secret
+              mountPath: /mnt/ldap-secrets
+              subPath: secrets
+            - name: entrypoint
+              mountPath: /entrypoint.py
+              subPath: entrypoint.py
             - name: certs
               mountPath: /tls
               readOnly: true
       volumes:
-        - name: bootstrap
+        - name: templates
           configMap:
-            name: {{ include "tachydromos.fullname" . }}-postfix-bootstrap
-            defaultMode: 0755
-        - name: configmap
+            name: {{ include "tachydromos.fullname" . }}-postfix-templates
+        - name: config
           configMap:
             name: {{ include "tachydromos.fullname" . }}-postfix
-        - name: configmap-ldap
+        - name: ldap-config
           configMap:
-            name: {{ include "tachydromos.fullname" . }}-postfix-ldap
-        - name: configvolume
-          emptyDir: {}
+            name: {{ include "tachydromos.fullname" . }}-openldap-shared
+        - name: ldap-secret
+          secret:
+            secretName: {{ include "tachydromos.fullname" . }}-openldap-shared
+            defaultMode: 0400
+        - name: entrypoint
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-postfix-entrypoint
+            defaultMode: 0755
         - name: certs
           secret:
             secretName: {{ .Values.ingress.secretName }}

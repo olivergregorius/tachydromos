@@ -6,14 +6,17 @@ RUN apk add --update-cache \
     postfix=$POSTFIX_VERSION \
     postfix-ldap=$POSTFIX_VERSION \
     ca-certificates \
-    envsubst \
+    python3 \
+    py3-pip \
     && rm -rf /var/cache/apk/*
+
+RUN pip3 install jinja2 pyyaml
 
 # Main process must run as root - needs permissions for spawning new processes and binding to ports < 1024
 USER root
 
 # SMTP | PROXY procotol | submission
-EXPOSE 25 26 587 123
+EXPOSE 25 26 587
 
-ENTRYPOINT ["/usr/sbin/postfix"]
-CMD ["-c", "/etc/postfix", "start-fg"]
+ENTRYPOINT [""]
+CMD [""]
