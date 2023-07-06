@@ -72,13 +72,13 @@ spec:
             name: {{ include "tachydromos.fullname" . }}-postfix-templates
         - name: config
           configMap:
-            name: {{ include "tachydromos.fullname" . }}-postfix
+            name: {{ include "tachydromos.fullname" . }}-postfix-yaml
         - name: ldap-config
           configMap:
-            name: {{ include "tachydromos.fullname" . }}-openldap-shared
+            name: {{ include "tachydromos.fullname" . }}-openldap-yaml
         - name: ldap-secret
           secret:
-            secretName: {{ include "tachydromos.fullname" . }}-openldap-shared
+            secretName: {{ include "tachydromos.fullname" . }}-openldap-yaml
             defaultMode: 0400
         - name: entrypoint
           configMap:

@@ -42,9 +42,9 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "tachydromos.fullname" . }}-openldap
+                name: {{ include "tachydromos.fullname" . }}-openldap-env
             - secretRef:
-                name: {{ include "tachydromos.fullname" . }}-openldap
+                name: {{ include "tachydromos.fullname" . }}-openldap-env
           resources:
             {{- toYaml .Values.openldap.resources | nindent 12 }}
           volumeMounts:

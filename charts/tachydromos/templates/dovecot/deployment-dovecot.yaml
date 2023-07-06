@@ -81,17 +81,17 @@ spec:
             name: {{ include "tachydromos.fullname" . }}-dovecot-templates
         - name: config
           configMap:
-            name: {{ include "tachydromos.fullname" . }}-dovecot
+            name: {{ include "tachydromos.fullname" . }}-dovecot-yaml
         - name: secret
           secret:
-            secretName: {{ include "tachydromos.fullname" . }}-dovecot
+            secretName: {{ include "tachydromos.fullname" . }}-dovecot-yaml
             defaultMode: 0400
         - name: ldap-config
           configMap:
-            name: {{ include "tachydromos.fullname" . }}-openldap-shared
+            name: {{ include "tachydromos.fullname" . }}-openldap-yaml
         - name: ldap-secret
           secret:
-            secretName: {{ include "tachydromos.fullname" . }}-openldap-shared
+            secretName: {{ include "tachydromos.fullname" . }}-openldap-yaml
             defaultMode: 0400
         - name: entrypoint
           configMap:
