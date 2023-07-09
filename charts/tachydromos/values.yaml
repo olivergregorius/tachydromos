@@ -75,6 +75,41 @@ dovecot:
   postmasterEmail: postmaster@example.org
   superuserUsername: sysmail@example.org
 
+rspamd:
+  image:
+    repository: docker.io/olivergregorius/rspamd
+    tag: 3.5.0-alpha
+    pullPolicy: Always
+  replicas: 1
+  podAnnotations: {}
+  podSecurityContext: {}
+  resources:
+    requests:
+      memory: 32Mi
+      cpu: 50m
+    limits:
+      memory: 64Mi
+      cpu: 100m
+  service:
+    type: NodePort
+    nodePorts:
+      milter: ""
+      webinterface: ""
+  dkimSelector: "2023"
+  sidecars:
+    redis:
+      image:
+        repository: docker.io/redis
+        tag: 7.0.11
+        pullPolicy: IfNotPresent
+      resources:
+        requests:
+          memory: 32Mi
+          cpu: 50m
+        limits:
+          memory: 64Mi
+          cpu: 100m
+
 ingress:
   enabled: true
   annotations:

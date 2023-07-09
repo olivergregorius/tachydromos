@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-rspamd-templates
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+data:
+  # /etc/rspamd/local.d/
+  arc.conf.j2: |
+    path = "/var/lib/rspamd/dkim/{{ `{{ dkimSelector }}` }}.key";
+    selector = "{{ `{{ dkimSelector }}` }}";
+
+    # Enable DKIM signing for alias sender addresses
+    allow_username_mismatch = true;
+  dkim_signing.conf.j2: |
+    path = "/var/lib/rspamd/dkim/{{ `{{ dkimSelector }}` }}.key";
+    selector = "{{ `{{ dkimSelector }}` }}";
+
+    ### Enable DKIM signing for alias sender addresses
+    allow_username_mismatch = true;
+  classifier-bayes.conf.j2: |
+    backend = "redis";
+  logging.inc.j2: |
+    type = "console";
+  milter_headers.conf.j2: |
+    use = ["x-spamd-bar", "x-spam-level", "authentication-results"];
+    authenticated_headers = ["authentication-results"];
+  redis.conf.j2: |
+    servers = "localhost:6379";
+  worker-controller.inc.j2: |
+    bind_socket = "*:11334";
+    password = "{{ `{{ hashedRspamdPassword }}` }}";
+  worker-normal.inc.j2: |
+    bind_socket = "localhost:11333";
+  worker-proxy.inc.j2: |
+    bind_socket = "*:11332";
+      milter = yes;
+      timeout = 120s;
+      upstream "local" {
+      default = yes;
+      self_scan = yes;
+    }
+  # /usr/local/bin/
+  generate_dkim_key.sh.j2: |
+    #!/bin/sh
+    rspamadm dkim_keygen -b 2048 -s {{ `{{ dkimSelector }}` }} -k /var/lib/rspamd/dkim/{{ `{{ dkimSelector }}` }}.key > /var/lib/rspamd/dkim/{{ `{{ dkimSelector }}` }}.txt

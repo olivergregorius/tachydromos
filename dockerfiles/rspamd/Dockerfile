@@ -1,11 +1,11 @@
 FROM alpine:3.18.2
 
-ARG POSTFIX_VERSION=3.8.1-r0
+ARG RSPAMD_VERSION=3.5-r7
 
 RUN apk add --update-cache \
-    postfix=$POSTFIX_VERSION \
-    postfix-ldap=$POSTFIX_VERSION \
-    ca-certificates \
+    rspamd=$RSPAMD_VERSION \
+    rspamd-controller=$RSPAMD_VERSION \
+    rspamd-proxy=$RSPAMD_VERSION \
     python3 \
     py3-pip \
     && rm -rf /var/cache/apk/*
@@ -15,8 +15,8 @@ RUN pip3 install jinja2 pyyaml
 # Main process must run as root - needs permissions for spawning new processes and binding to ports < 1024
 USER root
 
-# SMTP | PROXY procotol | Submission
-EXPOSE 25 26 587
+# Milter | Webinterface
+EXPOSE 11332 11334
 
 ENTRYPOINT []
 CMD []

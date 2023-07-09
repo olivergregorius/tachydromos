@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-rspamd-yaml
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+data:
+  config: |
+    dkimSelector: {{ .Values.rspamd.dkimSelector }}

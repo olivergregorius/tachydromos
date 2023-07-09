@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-rspamd
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.rspamd.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tachydromos-rspamd
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: {{ include (print .Template.BasePath "/rspamd/configmap-rspamd.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print .Template.BasePath "/rspamd/secret-rspamd.yaml") . | sha256sum }}
+        checksum/configmap-templates: {{ include (print .Template.BasePath "/rspamd/configmap-rspamd-templates.yaml") . | sha256sum }}
+        checksum/configmap-entrypoint: {{ include (print .Template.BasePath "/rspamd/configmap-rspamd-entrypoint.yaml") . | sha256sum }}
+        {{- with .Values.rspamd.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/name: tachydromos-rspamd
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/version: {{ .Values.rspamd.image.tag | quote }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tachydromos.fullname" . }}
+      securityContext:
+        {{- toYaml .Values.rspamd.podSecurityContext | nindent 8 }}
+      containers:
+        - name: rspamd
+          image: "{{ .Values.rspamd.image.repository }}:{{ .Values.rspamd.image.tag }}"
+          imagePullPolicy: {{ .Values.rspamd.image.pullPolicy }}
+          command:
+            - /entrypoint.py
+          ports:
+            - name: milter
+              containerPort: 11332
+              protocol: TCP
+            - name: webinterface
+              containerPort: 11334
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.rspamd.resources | nindent 12 }}
+          volumeMounts:
+            - name: templates
+              mountPath: /mnt/templates
+            - name: config
+              mountPath: /mnt/config
+              subPath: config
+            - name: secret
+              mountPath: /mnt/secrets
+              subPath: secrets
+            - name: entrypoint
+              mountPath: /entrypoint.py
+              subPath: entrypoint.py
+            - name: data
+              mountPath: /var/lib/rspamd
+        - name: redis
+          image: "{{ .Values.rspamd.sidecars.redis.image.repository }}:{{ .Values.rspamd.sidecars.redis.image.tag }}"
+          imagePullPolicy: {{ .Values.rspamd.sidecars.redis.image.pullPolicy }}
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          startupProbe:
+            tcpSocket:
+              port: redis
+            failureThreshold: 12
+          readinessProbe:
+            tcpSocket:
+              port: redis
+            timeoutSeconds: 10
+            periodSeconds: 30
+          resources:
+          {{- toYaml .Values.rspamd.sidecars.redis.resources | nindent 12 }}
+          volumeMounts:
+            - name: redis-config
+              subPath: redis.conf
+              mountPath: /usr/local/etc/redis/redis.conf
+            - name: data
+              subPath: redis
+              mountPath: /var/lib/redis
+          command:
+            - redis-server
+            - /usr/local/etc/redis/redis.conf
+      volumes:
+        - name: templates
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-rspamd-templates
+        - name: config
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-rspamd-yaml
+        - name: secret
+          secret:
+            secretName: {{ include "tachydromos.fullname" . }}-rspamd-yaml
+            defaultMode: 0400
+        - name: entrypoint
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-rspamd-entrypoint
+            defaultMode: 0755
+        - name: data
+          emptyDir: {} # TODO PVC
+        - name: redis-config
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-rspamd-redis
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

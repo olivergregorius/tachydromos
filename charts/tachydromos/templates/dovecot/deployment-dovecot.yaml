@@ -19,6 +19,7 @@ spec:
         checksum/configmap-entrypoint: {{ include (print .Template.BasePath "/dovecot/configmap-dovecot-entrypoint.yaml") . | sha256sum }}
         checksum/configmap-openldap: {{ include (print .Template.BasePath "/openldap/configmap-openldap.yaml") . | sha256sum }}
         checksum/secret-openldap: {{ include (print .Template.BasePath "/openldap/secret-openldap.yaml") . | sha256sum }}
+        checksum/secret-rspamd: {{ include (print .Template.BasePath "/rspamd/secret-rspamd.yaml") . | sha256sum }}
         {{- with .Values.dovecot.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -70,6 +71,9 @@ spec:
             - name: ldap-secret
               mountPath: /mnt/ldap-secrets
               subPath: secrets
+            - name: rspamd-secret
+              mountPath: /mnt/rspamd-secrets
+              subPath: secrets
             - name: entrypoint
               mountPath: /entrypoint.py
               subPath: entrypoint.py
@@ -92,6 +96,10 @@ spec:
         - name: ldap-secret
           secret:
             secretName: {{ include "tachydromos.fullname" . }}-openldap-yaml
+            defaultMode: 0400
+        - name: rspamd-secret
+          secret:
+            secretName: {{ include "tachydromos.fullname" . }}-rspamd-yaml
             defaultMode: 0400
         - name: entrypoint
           configMap:

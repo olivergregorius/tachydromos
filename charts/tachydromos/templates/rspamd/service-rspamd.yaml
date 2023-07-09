@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-rspamd
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.rspamd.service.type }}
+  selector:
+    app.kubernetes.io/name: tachydromos-rspamd
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: milter
+      port: 11332
+      targetPort: milter
+      protocol: TCP
+      {{- if and (eq .Values.rspamd.service.type "NodePort") (not (empty .Values.rspamd.service.nodePorts.milter)) }}
+      nodePort: {{ .Values.rspamd.service.nodePorts.milter }}
+      {{- end }}
+    - name: webinterface
+      port: 11334
+      targetPort: webinterface
+      protocol: TCP
+      {{- if and (eq .Values.rspamd.service.type "NodePort") (not (empty .Values.rspamd.service.nodePorts.webinterface)) }}
+      nodePort: {{ .Values.rspamd.service.nodePorts.webinterface }}
+      {{- end }}
