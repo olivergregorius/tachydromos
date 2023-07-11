@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "tachydromos.fullname" . }}-postfix-entrypoint
+  name: {{ include "tachydromos.fullname" . }}-sogo-entrypoint
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
@@ -58,6 +58,10 @@ data:
         config.update(yaml.safe_load(filestream))
       with open('/mnt/ldap-secrets', 'r') as filestream:
         config.update(yaml.safe_load(filestream))
+      with open('/mnt/postgresql-config', 'r') as filestream:
+        config.update(yaml.safe_load(filestream))
+      with open('/mnt/postgresql-secrets', 'r') as filestream:
+        config.update(yaml.safe_load(filestream))
       return config
 
 
@@ -95,29 +99,10 @@ data:
     j2Env = j2.Environment(loader=j2.FileSystemLoader('/mnt/templates'), finalize=j2_finalize, keep_trailing_newline=True)
 
 
-    configDir = '/etc/postfix/'
-    ldapDir = configDir + 'ldap/'
-    if not os.path.isdir(ldapDir):
-      os.mkdir(ldapDir)
-      set_permissions(ldapDir, False)
+    configDir = '/etc/sogo/'
 
 
-    generate_config('main.cf.j2', configDir)
-    generate_config('master.cf.j2', configDir)
-    generate_config('submission_header_cleanup.j2', configDir)
-    generate_config('postscreen_access.j2', configDir)
-    generate_config('helo_access.j2', configDir)
-    generate_config('without_ptr.j2', configDir)
-
-    generate_config('accounts.cf.j2', ldapDir)
-    generate_config('aliases.cf.j2', ldapDir)
-    generate_config('domains.cf.j2', ldapDir)
-    generate_config('recipient-access.cf.j2', ldapDir)
-    generate_config('sender-login-maps.cf.j2', ldapDir)
-
-    subprocess.run(['postmap', configDir + 'postscreen_access'])
-    subprocess.run(['postmap', configDir + 'helo_access'])
-    subprocess.run(['postmap', configDir + 'without_ptr'])
+    generate_config('sogo.conf.j2', configDir, set_perms=False)
 
     logger.info('Setup completed, starting application...')
-    os.execv('/usr/sbin/postfix', ['postfix', '-c', configDir, 'start-fg'])
+    os.execv('/usr/sbin/sogod', ['sogod'])

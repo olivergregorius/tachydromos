@@ -1,0 +1,164 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-sogo
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.dovecot.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tachydromos-sogo
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: {{ include (print .Template.BasePath "/sogo/configmap-sogo.yaml") . | sha256sum }}
+        checksum/configmap-templates: {{ include (print .Template.BasePath "/sogo/configmap-sogo-templates.yaml") . | sha256sum }}
+        checksum/configmap-entrypoint: {{ include (print .Template.BasePath "/sogo/configmap-sogo-entrypoint.yaml") . | sha256sum }}
+        checksum/configmap-openldap: {{ include (print .Template.BasePath "/openldap/configmap-openldap.yaml") . | sha256sum }}
+        checksum/secret-openldap: {{ include (print .Template.BasePath "/openldap/secret-openldap.yaml") . | sha256sum }}
+        checksum/configmap-postgresql: {{ include (print .Template.BasePath "/postgresql/configmap-postgresql.yaml") . | sha256sum }}
+        checksum/secret-postgresql: {{ include (print .Template.BasePath "/postgresql/secret-postgresql.yaml") . | sha256sum }}
+        {{- with .Values.sogo.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/name: tachydromos-sogo
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/version: {{ .Values.sogo.image.tag | quote }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tachydromos.fullname" . }}
+      securityContext:
+        {{- toYaml .Values.sogo.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: sogo-static-files-prepare
+          securityContext:
+            runAsUser: 0
+          image: "{{ .Values.sogo.image.repository }}:{{ .Values.sogo.image.tag }}"
+          imagePullPolicy: {{ .Values.sogo.image.pullPolicy }}
+          command:
+            - rsync
+            - -a
+            - /usr/lib/GNUstep/SOGo/
+            - /mnt/static-files
+          volumeMounts:
+            - name: data
+              mountPath: /mnt/static-files
+      containers:
+        - name: sogo
+          image: "{{ .Values.sogo.image.repository }}:{{ .Values.sogo.image.tag }}"
+          imagePullPolicy: {{ .Values.sogo.image.pullPolicy }}
+          command:
+            - /entrypoint.py
+          ports:
+            - name: sogo
+              containerPort: 20000
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.sogo.resources | nindent 12 }}
+          volumeMounts:
+            - name: templates
+              mountPath: /mnt/templates
+            - name: config
+              mountPath: /mnt/config
+              subPath: config
+            - name: ldap-config
+              mountPath: /mnt/ldap-config
+              subPath: config
+            - name: ldap-secret
+              mountPath: /mnt/ldap-secrets
+              subPath: secrets
+            - name: postgresql-config
+              mountPath: /mnt/postgresql-config
+              subPath: config
+            - name: postgresql-secret
+              mountPath: /mnt/postgresql-secrets
+              subPath: secrets
+            - name: entrypoint
+              mountPath: /entrypoint.py
+              subPath: entrypoint.py
+            - name: data
+              mountPath: /usr/lib/GNUstep/SOGo
+        - name: nginx
+          image: "{{ .Values.sogo.nginx.image.repository }}:{{ .Values.sogo.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.sogo.nginx.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /SOGo/
+              port: http
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /SOGo/
+              port: http
+            timeoutSeconds: 10
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.sogo.nginx.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /usr/lib/GNUstep/SOGo
+              readOnly: true
+            - name: nginx-config
+              subPath: sogo.nginx.conf
+              mountPath: /etc/nginx/conf.d/sogo.nginx.conf
+        - name: memcached
+          image: "{{ .Values.sogo.memcached.image.repository }}:{{ .Values.sogo.memcached.image.tag }}"
+          imagePullPolicy: {{ .Values.sogo.memcached.image.pullPolicy }}
+          ports:
+            - name: memcached
+              containerPort: 11211
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.sogo.memcached.resources | nindent 12 }}
+      volumes:
+        - name: templates
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-sogo-templates
+        - name: config
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-sogo-yaml
+        - name: ldap-config
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-openldap-yaml
+        - name: ldap-secret
+          secret:
+            secretName: {{ include "tachydromos.fullname" . }}-openldap-yaml
+            defaultMode: 0440
+        - name: postgresql-config
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-postgresql-yaml
+        - name: postgresql-secret
+          secret:
+            secretName: {{ include "tachydromos.fullname" . }}-postgresql-yaml
+            defaultMode: 0440
+        - name: entrypoint
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-sogo-entrypoint
+            defaultMode: 0755
+        - name: nginx-config
+          configMap:
+            name: {{ include "tachydromos.fullname" . }}-sogo-nginx
+        - name: data
+          emptyDir: {} # TODO PVC
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

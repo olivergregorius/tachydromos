@@ -3,7 +3,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "tachydromos.fullname" . }}-postfix
+  name: {{ include "tachydromos.fullname" . }}
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}

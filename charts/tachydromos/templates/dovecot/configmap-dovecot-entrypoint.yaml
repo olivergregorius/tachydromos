@@ -64,13 +64,14 @@ data:
       return config
 
 
-    def generate_config(template, targetDir, owner='root', group='root', mode=0o644, dirmode=0o755):
-      target = targetDir + template.removesuffix('.j2')
+    def generate_config(template, target_dir, owner='root', group='root', mode=0o644, dirmode=0o755, set_perms=True):
+      target = target_dir + template.removesuffix('.j2')
       logger.info(f'Generating config {target}')
       configfile = j2Env.get_template(template).render(config)
       with open(target, 'w') as fileHandler:
         fileHandler.write(configfile)
-      set_permissions(target, False, owner, group, mode, dirmode)
+      if set_perms:
+        set_permissions(target, False, owner, group, mode, dirmode)
 
 
     def set_permissions(target, recursive, owner='root', group='root', mode=0o644, dirmode=0o755):
@@ -89,12 +90,12 @@ data:
           os.chmod(target, mode)
 
 
-    def j2Finalize(value):
+    def j2_finalize(value):
       return value if value is not None else ''
 
 
     config = load_config()
-    j2Env = j2.Environment(loader=j2.FileSystemLoader('/mnt/templates'), finalize=j2Finalize, keep_trailing_newline=True)
+    j2Env = j2.Environment(loader=j2.FileSystemLoader('/mnt/templates'), finalize=j2_finalize, keep_trailing_newline=True)
 
 
     configDir = '/etc/dovecot/'

@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-dovecot
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: tachydromos-dovecot
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: lmtp
+      port: 24
+      targetPort: lmtp
+      protocol: TCP
+    - name: imap
+      port: 143
+      targetPort: imap
+      protocol: TCP
+    - name: sasl
+      port: 3659
+      targetPort: sasl
+      protocol: TCP
+    - name: sieve
+      port: 4190
+      targetPort: sieve
+      protocol: TCP

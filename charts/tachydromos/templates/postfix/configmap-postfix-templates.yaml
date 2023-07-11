@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
-  # /etc/postfix
+  # /etc/postfix/
   master.cf.j2: |
     #
     # Postfix master process configuration file.  For details on the format
@@ -276,7 +276,7 @@ data:
     /^X-Originating-IP:/ IGNORE
     /^X-Mailer:/ IGNORE
     /^User-Agent:/ IGNORE
-  # /etc/postfix/ldap
+  # /etc/postfix/ldap/
   accounts.cf.j2: |
     server_host = tachydromos-openldap
     server_port = 1389

@@ -1,0 +1,119 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-sogo-templates
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+data:
+  # /etc/sogo/
+  sogo.conf.j2: |
+    {
+      // PostgreSQL Database
+      SOGoProfileURL = "postgresql://{{ `{{ postgresqlUsername }}` }}:{{ `{{ postgresqlPassword }}` }}@{{ `{{ postgresqlHost }}` }}:{{ `{{ postgresqlPort }}` }}/{{ `{{ postgresqlDatabase }}` }}/sogo_user_profile";
+      OCSFolderInfoURL = "postgresql://{{ `{{ postgresqlUsername }}` }}:{{ `{{ postgresqlPassword }}` }}@{{ `{{ postgresqlHost }}` }}:{{ `{{ postgresqlPort }}` }}/{{ `{{ postgresqlDatabase }}` }}/sogo_folder_info";
+      OCSSessionsFolderURL = "postgresql://{{ `{{ postgresqlUsername }}` }}:{{ `{{ postgresqlPassword }}` }}@{{ `{{ postgresqlHost }}` }}:{{ `{{ postgresqlPort }}` }}/{{ `{{ postgresqlDatabase }}` }}/sogo_sessions_folder";
+      OCSEMailAlarmsFolderURL = "postgresql://{{ `{{ postgresqlUsername }}` }}:{{ `{{ postgresqlPassword }}` }}@{{ `{{ postgresqlHost }}` }}:{{ `{{ postgresqlPort }}` }}/{{ `{{ postgresqlDatabase }}` }}/sogo_alarms_folder";
+      OCSCacheFolderURL = "postgresql://{{ `{{ postgresqlUsername }}` }}:{{ `{{ postgresqlPassword }}` }}@{{ `{{ postgresqlHost }}` }}:{{ `{{ postgresqlPort }}` }}/{{ `{{ postgresqlDatabase }}` }}/sogo_cache_folder";
+      OCSStoreURL = "postgresql://{{ `{{ postgresqlUsername }}` }}:{{ `{{ postgresqlPassword }}` }}@{{ `{{ postgresqlHost }}` }}:{{ `{{ postgresqlPort }}` }}/{{ `{{ postgresqlDatabase }}` }}/sogo_store";
+      OCSAclURL = "postgresql://{{ `{{ postgresqlUsername }}` }}:{{ `{{ postgresqlPassword }}` }}@{{ `{{ postgresqlHost }}` }}:{{ `{{ postgresqlPort }}` }}/{{ `{{ postgresqlDatabase }}` }}/sogo_acl";
+      // EAS Tuning
+      WOWorkersCount = {{ `{{ workerCount }}` }};
+      WOWatchDogRequestTimeout = 60;
+      SOGoMaximumPingInterval = 3540;
+      SOGoMaximumSyncInterval = 3540;
+      SOGoInternalSyncInterval = 15;
+      SOGoMaximumSyncResponseSize = 2048;
+      // Mail
+      SOGoMailingMechanism = smtp;
+      SOGoSMTPServer = tachydromos-postfix:587;
+      SOGoSMTPAuthenticationType = PLAIN;
+      SOGoForceExternalLoginWithEmail = YES;
+      SOGoIMAPServer = imap://tachydromos-dovecot:143;
+      SOGoSieveServer = sieve://tachydromos-dovecot:4190;
+      SOGoDraftsFolderName = Drafts;
+      SOGoSentFolderName = Sent;
+      SOGoJunkFolderName = Junk;
+      SOGoTrashFolderName = Trash;
+      // Notifications
+      SOGoAppointmentSendEMailNotifications = YES;
+      //SOGoACLsSendEMailNotifications = NO;
+      //SOGoFoldersSendEMailNotifications = NO;
+      // Password change
+      SOGoPasswordChangeEnabled = YES;
+      // LDAP auth
+      SOGoUserSources = (
+        {
+          type = ldap;
+          id = users;
+          canAuthenticate = YES;
+          isAddressBook = YES;
+          displayName = "Globales Addressbuch";
+          hostname = "ldap://tachydromos-openldap:1389";
+          bindDN = "{{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}";
+          bindPassword = "{{ `{{ ldapBinddnPassword }}` }}";
+          baseDN = "ou=users,{{ `{{ ldapRoot }}` }}";
+          filter = "objectClass=mailAccount AND mailActive='TRUE'";
+          scope = SUB;
+          userPasswordAlgorithm = ssha;
+          CNFieldName = cn;
+          UIDFieldName = mail;
+          IDFieldName = mail;
+          bindFields = (mail);
+          IMAPLoginFieldName = mail;
+          MailFieldNames = (mail, mailAlias);
+          SearchFieldNames = (cn, mail, mailAlias);
+        }
+      );
+      // BruteForce Protection
+      SOGoMaximumFailedLoginCount = 3;
+      SOGoMaximumFailedLoginInterval = 10;
+      SOGoFailedLoginBlockInterval = 300;
+      SOGoCacheCleanupInterval = 300;
+      // Web Interface
+      // General
+      SOGoPageTitle = SOGo;
+      SOGoLanguage = German;
+      SOGoTimeZone = Europe/Berlin;
+      SOGoShortDateFormat = "%d.%m.%Y";
+      SOGoLongDateFormat = "%A, %d. %B %Y";
+      SOGoTimeFormat = "%H:%M";
+      SOGoLoginModule = Mail;
+      SOGoRefreshViewCheck = every_5_minutes;
+      SOGoGravatarEnabled = NO;
+      // Calendar
+      SOGoFirstDayOfWeek = 1;
+      SOGoDayStartTime = 8;
+      SOGoDayEndTime = 16;
+      SOGoFirstWeekOfYear = January1;
+      SOGoCalendarEventsDefaultClassification = PRIVATE;
+      SOGoCalendarTasksDefaultClassification = PRIVATE;
+      // Mail
+      SOGoSieveScriptsEnabled = YES;
+      SOGoVacationEnabled = YES;
+      SOGoForwardEnabled = YES;
+      SOGoMailMessageForwarding = inline;
+      SOGoMailReplyPlacement = above;
+      SOGoMailSignaturePlacement = above;
+      SOGoMailComposeMessageType = html;
+      // General
+      SOGoXSRFValidationEnabled = NO;
+      SxVMemLimit = {{ `{{ workerMemLimitMb }}` }};
+      WONoDetach = YES;
+      WOPidFile = /var/run/sogo/sogo.pid;
+      SOGoMemcachedHost = localhost:11211;
+      SOGoCalendarDefaultRoles = (
+        PublicViewer,
+        ConfidentialDAndTViewer
+      );
+      // Debug
+      //SOGoDebugRequests = YES;
+      //SoDebugBaseURL = YES;
+      //ImapDebugEnabled = YES;
+      //LDAPDebugEnabled = YES;
+      //PGDebugEnabled = YES;
+      //MySQL4DebugEnabled = YES;
+      //SOGoUIxDebugEnabled = YES;
+      //WODontZipResponse = YES;
+      //SOGoEASDebugEnabled = YES;
+      WOLogFile = -;
+    }

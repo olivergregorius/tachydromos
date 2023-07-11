@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-sogo
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.sogo.service.type }}
+  selector:
+    app.kubernetes.io/name: tachydromos-sogo
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+      {{- if and (eq .Values.sogo.service.type "NodePort") (not (empty .Values.sogo.service.nodePorts.http)) }}
+      nodePort: {{ .Values.sogo.service.nodePorts.http }}
+      {{- end }}
