@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-postgresql
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.postgresql.service.type }}
+  selector:
+    app.kubernetes.io/name: tachydromos-postgresql
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: psql
+      port: 5432
+      targetPort: psql
+      protocol: TCP
+      {{- if and (eq .Values.postgresql.service.type "NodePort") (not (empty .Values.postgresql.service.nodePorts.psql)) }}
+      nodePort: {{ .Values.postgresql.service.nodePorts.psql }}
+      {{- end }}

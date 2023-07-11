@@ -110,6 +110,26 @@ rspamd:
           memory: 64Mi
           cpu: 100m
 
+postgresql:
+  image:
+    repository: docker.io/bitnami/postgresql
+    tag: 15.3.0
+    pullPolicy: IfNotPresent
+  replicas: 1
+  podAnnotations: {}
+  podSecurityContext: {}
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 200m
+    limits:
+      memory: 512Mi
+      cpu: 1000m
+  service:
+    type: NodePort
+    nodePorts:
+      psql: ""
+
 ingress:
   enabled: true
   annotations:

@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-postgresql
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.dovecot.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tachydromos-postgresql
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: {{ include (print .Template.BasePath "/postgresql/configmap-postgresql.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print .Template.BasePath "/postgresql/secret-postgresql.yaml") . | sha256sum }}
+        {{- with .Values.postgresql.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/name: tachydromos-postgresql
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/version: {{ .Values.postgresql.image.tag | quote }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tachydromos.fullname" . }}
+      securityContext:
+        {{- toYaml .Values.postgresql.podSecurityContext | nindent 8 }}
+      containers:
+        - name: postgresql
+          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+          imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
+          ports:
+            - name: psql
+              containerPort: 5432
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "tachydromos.fullname" . }}-postgresql-env
+            - secretRef:
+                name: {{ include "tachydromos.fullname" . }}-postgresql-env
+          resources:
+            {{- toYaml .Values.postgresql.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/postgresql
+      volumes:
+        - name: data
+          emptyDir: {} # TODO PVC
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
