@@ -95,6 +95,17 @@ rspamd:
     nodePorts:
       milter: ""
       webinterface: ""
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: zerossl-production
+    hostname: rspamd.testmail.gregorius.tech
+    paths:
+      - path: /
+        serviceName: rspamd
+        servicePort: 11334
+    secretName: tachydromos-certificate-rspamd
   dkimSelector: "2023"
   sidecars:
     redis:
@@ -151,6 +162,22 @@ sogo:
     type: NodePort
     nodePorts:
       http: ""
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: zerossl-production
+      nginx.ingress.kubernetes.io/app-root: /SOGo
+      nginx.ingress.kubernetes.io/proxy-body-size: 16M
+      nginx.ingress.kubernetes.io/proxy-buffering: "on"
+      nginx.ingress.kubernetes.io/proxy-buffers-number: "64"
+      nginx.ingress.kubernetes.io/proxy-buffer-size: "512k"
+    hostname: ""
+    paths:
+      - path: /
+        serviceName: sogo
+        servicePort: 8080
+    secretName: tachydromos-certificate
   nginx:
     image:
       repository: docker.io/nginx
@@ -175,22 +202,6 @@ sogo:
       limits:
         memory: 64Mi
         cpu: 100m
-
-ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: zerossl-production
-    nginx.ingress.kubernetes.io/app-root: /SOGo
-    nginx.ingress.kubernetes.io/proxy-body-size: 16M
-    nginx.ingress.kubernetes.io/proxy-buffering: "on"
-    nginx.ingress.kubernetes.io/proxy-buffers-number: "64"
-    nginx.ingress.kubernetes.io/proxy-buffer-size: "512k"
-  paths:
-    - path: /
-      serviceName: sogo
-      servicePort: 8080
-  secretName: tachydromos-certificate
 
 nodeSelector: {}
 affinity: {}

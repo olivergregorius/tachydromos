@@ -1,25 +1,25 @@
-{{- if .Values.ingress.enabled -}}
+{{- if .Values.rspamd.ingress.enabled -}}
 {{- $fullname := include "tachydromos.fullname" . -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "tachydromos.fullname" . }}
+  name: {{ include "tachydromos.fullname" . }}-rspamd
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- with .Values.rspamd.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   tls:
     - hosts:
-        - {{ .Values.hostname }}
-      secretName: {{ .Values.ingress.secretName }}
+        - {{ .Values.rspamd.ingress.hostname }}
+      secretName: {{ .Values.rspamd.ingress.secretName }}
   rules:
-    - host: {{ .Values.hostname }}
+    - host: {{ .Values.rspamd.ingress.hostname }}
       http:
         paths:
-          {{- range .Values.ingress.paths }}
+          {{- range .Values.rspamd.ingress.paths }}
           - path: {{ .path }}
             pathType: Prefix
             backend:
