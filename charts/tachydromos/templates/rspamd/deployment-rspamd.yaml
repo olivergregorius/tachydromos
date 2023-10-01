@@ -60,10 +60,8 @@ spec:
             - name: entrypoint
               mountPath: /entrypoint.py
               subPath: entrypoint.py
-            {{- if .Values.rspamd.persistence.enabled }}
             - name: data
               mountPath: /var/lib/rspamd
-            {{- end }}
         - name: redis
           image: "{{ .Values.rspamd.sidecars.redis.image.repository }}:{{ .Values.rspamd.sidecars.redis.image.tag }}"
           imagePullPolicy: {{ .Values.rspamd.sidecars.redis.image.pullPolicy }}
@@ -86,11 +84,9 @@ spec:
             - name: redis-config
               subPath: redis.conf
               mountPath: /usr/local/etc/redis/redis.conf
-            {{- if .Values.rspamd.persistence.enabled }}
             - name: data
               subPath: redis
               mountPath: /var/lib/redis
-            {{- end }}
           command:
             - redis-server
             - /usr/local/etc/redis/redis.conf
@@ -109,11 +105,13 @@ spec:
           configMap:
             name: {{ include "tachydromos.fullname" . }}-rspamd-entrypoint
             defaultMode: 0755
-        {{- if .Values.rspamd.persistence.enabled }}
         - name: data
+          {{- if .Values.rspamd.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ include "tachydromos.fullname" . }}-rspamd
-        {{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         - name: redis-config
           configMap:
             name: {{ include "tachydromos.fullname" . }}-rspamd-redis
