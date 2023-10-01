@@ -47,12 +47,17 @@ spec:
                 name: {{ .Values.database.existingSecret | default $postgresqlEnvSecretName }}
           resources:
             {{- toYaml .Values.postgresql.resources | nindent 12 }}
+          {{- if .Values.postgresql.persistence.enabled }}
           volumeMounts:
             - name: data
               mountPath: /bitnami/postgresql
+          {{- end }}
+      {{- if .Values.postgresql.persistence.enabled }}
       volumes:
         - name: data
-          emptyDir: {} # TODO PVC
+          persistentVolumeClaim:
+            claimName: {{ include "tachydromos.fullname" . }}-postgresql
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

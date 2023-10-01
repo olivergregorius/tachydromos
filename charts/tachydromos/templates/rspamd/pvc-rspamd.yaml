@@ -1,0 +1,21 @@
+{{- if .Values.rspamd.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-rspamd
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+  {{- with .Values.rspamd.persistence.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  storageClassName: {{ .Values.rspamd.persistence.storageClassName }}
+  accessModes:
+    {{- range .Values.rspamd.persistence.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.rspamd.persistence.size }}
+{{- end }}

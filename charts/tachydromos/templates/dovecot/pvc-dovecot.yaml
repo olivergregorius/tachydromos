@@ -1,0 +1,21 @@
+{{- if .Values.dovecot.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-dovecot
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+  {{- with .Values.dovecot.persistence.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  storageClassName: {{ .Values.dovecot.persistence.storageClassName }}
+  accessModes:
+    {{- range .Values.dovecot.persistence.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.dovecot.persistence.size }}
+{{- end }}

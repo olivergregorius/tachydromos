@@ -92,6 +92,14 @@ dovecot:
     limits:
       memory: 64Mi
       cpu: 100m
+  persistence:
+    enabled: false
+    storageClassName: longhorn
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+    annotations:
+      helm.sh/resource-policy: keep
   postmasterEmail: postmaster@example.org
   superuserUsername: sysmail@example.org
 
@@ -115,6 +123,14 @@ rspamd:
     nodePorts:
       milter: ""
       webinterface: ""
+  persistence:
+    enabled: false
+    storageClassName: longhorn
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+    annotations:
+      helm.sh/resource-policy: keep
   ingress:
     enabled: true
     annotations:
@@ -161,6 +177,14 @@ postgresql:
     type: NodePort
     nodePorts:
       psql: ""
+  persistence:
+    enabled: false
+    storageClassName: longhorn
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+    annotations:
+      helm.sh/resource-policy: keep
 
 sogo:
   image:

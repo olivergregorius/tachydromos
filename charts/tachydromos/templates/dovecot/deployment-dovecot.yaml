@@ -78,8 +78,10 @@ spec:
             - name: entrypoint
               mountPath: /entrypoint.py
               subPath: entrypoint.py
+            {{- if .Values.dovecot.persistence.enabled }}
             - name: data
               mountPath: /srv/dovecot
+            {{- end }}
       volumes:
         - name: templates
           configMap:
@@ -106,8 +108,11 @@ spec:
           configMap:
             name: {{ include "tachydromos.fullname" . }}-dovecot-entrypoint
             defaultMode: 0755
+        {{- if .Values.dovecot.persistence.enabled }}
         - name: data
-          emptyDir: {} # TODO PVC
+          persistentVolumeClaim:
+            claimName: {{ include "tachydromos.fullname" . }}-dovecot
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
