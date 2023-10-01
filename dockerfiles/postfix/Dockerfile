@@ -1,10 +1,10 @@
-FROM alpine:3.18.2
+FROM alpine:3.18.3
 
-ARG POSTFIX_VERSION=3.8.1-r0
+ARG APPVERSION
 
 RUN apk add --update-cache \
-    postfix=$POSTFIX_VERSION \
-    postfix-ldap=$POSTFIX_VERSION \
+    postfix=$APPVERSION \
+    postfix-ldap=$APPVERSION \
     ca-certificates \
     python3 \
     py3-pip \

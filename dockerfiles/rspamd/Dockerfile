@@ -1,11 +1,11 @@
-FROM alpine:3.18.2
+FROM alpine:3.18.3
 
-ARG RSPAMD_VERSION=3.5-r7
+ARG APPVERSION
 
 RUN apk add --update-cache \
-    rspamd=$RSPAMD_VERSION \
-    rspamd-controller=$RSPAMD_VERSION \
-    rspamd-proxy=$RSPAMD_VERSION \
+    rspamd=$APPVERSION \
+    rspamd-controller=$APPVERSION \
+    rspamd-proxy=$APPVERSION \
     python3 \
     py3-pip \
     && rm -rf /var/cache/apk/*

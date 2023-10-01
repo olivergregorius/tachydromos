@@ -1,4 +1,4 @@
-{{- if .Values.openldap.persistence.enabled }}
+{{- if and (.Values.openldap.enabled) (.Values.openldap.persistence.enabled) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

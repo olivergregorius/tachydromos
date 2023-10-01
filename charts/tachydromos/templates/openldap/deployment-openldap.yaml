@@ -1,3 +1,5 @@
+{{- if .Values.openldap.enabled }}
+{{- $openldapEnvSecretName := printf "%s-openldap-env" (include "tachydromos.fullname" .) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,7 +46,7 @@ spec:
             - configMapRef:
                 name: {{ include "tachydromos.fullname" . }}-openldap-env
             - secretRef:
-                name: {{ include "tachydromos.fullname" . }}-openldap-env
+                name: {{ .Values.ldap.existingSecret | default $openldapEnvSecretName }}
           resources:
             {{- toYaml .Values.openldap.resources | nindent 12 }}
           volumeMounts:
@@ -80,3 +82,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}

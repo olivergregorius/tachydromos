@@ -1,3 +1,4 @@
+{{- if .Values.openldap.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -17,3 +18,4 @@ spec:
       {{- if and (eq .Values.openldap.service.type "NodePort") (not (empty .Values.openldap.service.nodePorts.ldap)) }}
       nodePort: {{ .Values.openldap.service.nodePorts.ldap }}
       {{- end }}
+{{- end }}

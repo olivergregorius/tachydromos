@@ -278,48 +278,48 @@ data:
     /^User-Agent:/ IGNORE
   # /etc/postfix/ldap/
   accounts.cf.j2: |
-    server_host = tachydromos-openldap
-    server_port = 1389
+    server_host = {{ `{{ ldapHost }}` }}
+    server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
     bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = ou=users,{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
     scope       = sub
     dereference = 0
     version     = 3
     query_filter     = (&(objectClass=mailAccount)(mailActive=TRUE)(mail=%s))
     result_attribute = mail
   aliases.cf.j2: |
-    server_host = tachydromos-openldap
-    server_port = 1389
+    server_host = {{ `{{ ldapHost }}` }}
+    server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
     bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = ou=users,{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
     scope       = sub
     dereference = 0
     version     = 3
     query_filter     = (&(objectClass=mailAccount)(mailActive=TRUE)(mailAlias=%s))
     result_attribute = mail
   domains.cf.j2: |
-    server_host = tachydromos-openldap
-    server_port = 1389
+    server_host = {{ `{{ ldapHost }}` }}
+    server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
     bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = ou=domains,{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapDomainAttribute }}` }}={{ `{{ ldapDomainSearchBase }}` }},{{ `{{ ldapRoot }}` }}
     scope       = sub
     dereference = 0
     version     = 3
     query_filter     = (&(objectClass=organizationalUnit)(ou=%s))
     result_attribute = ou
   recipient-access.cf.j2: |
-    server_host = tachydromos-openldap
-    server_port = 1389
+    server_host = {{ `{{ ldapHost }}` }}
+    server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
     bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = ou=users,{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
     scope       = sub
     dereference = 0
     version     = 3
@@ -327,12 +327,12 @@ data:
     result_attribute = mail
     result_format    = REJECT
   sender-login-maps.cf.j2: |
-    server_host = tachydromos-openldap
-    server_port = 1389
+    server_host = {{ `{{ ldapHost }}` }}
+    server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
     bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = ou=users,{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
     scope       = sub
     dereference = 0
     version     = 3

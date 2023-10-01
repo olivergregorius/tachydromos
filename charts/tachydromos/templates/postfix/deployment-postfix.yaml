@@ -1,3 +1,4 @@
+{{- $openldapYamlSecretName := printf "%s-openldap-yaml" (include "tachydromos.fullname" .) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -78,7 +79,7 @@ spec:
             name: {{ include "tachydromos.fullname" . }}-openldap-yaml
         - name: ldap-secret
           secret:
-            secretName: {{ include "tachydromos.fullname" . }}-openldap-yaml
+            secretName: {{ .Values.ldap.existingSecret | default $openldapYamlSecretName }}
             defaultMode: 0400
         - name: entrypoint
           configMap:
@@ -86,7 +87,7 @@ spec:
             defaultMode: 0755
         - name: certs
           secret:
-            secretName: {{ .Values.ingress.secretName }}
+            secretName: {{ .Values.sogo.ingress.secretName }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

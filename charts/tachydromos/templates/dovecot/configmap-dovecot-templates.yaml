@@ -9,11 +9,11 @@ data:
   dovecot.conf.j2: |
     !include conf.d/*.conf
   dovecot-ldap.conf.j2: |
-    hosts     = tachydromos-openldap:1389
+    hosts     = {{ `{{ ldapHost }}` }}:{{ `{{ ldapPort }}` }}
     auth_bind = yes
     dn        = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
     dnpass    = {{ `{{ ldapBinddnPassword }}` }}
-    base      = ou=users,{{ `{{ ldapRoot }}` }}
+    base      = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
     scope     = subtree
     deref     = never
     pass_filter = (&(objectClass=mailAccount)(mailActive=TRUE)(mail=%u))

@@ -1,3 +1,5 @@
 ---
-version: 3.8.1-alpha
+repository: olivergregorius/postfix
+tag: 3.8.2-alpha
+version: 3.8.2-r0
 arch: linux/amd64,linux/arm64

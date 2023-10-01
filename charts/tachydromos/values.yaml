@@ -3,11 +3,31 @@ fullnameOverride: ""
 imagePullSecrets: []
 
 hostname: testmail.gregorius.tech
+ldap:
+  host: tachydromos-openldap
+  port: 389
+  root: dc=tachydromos,dc=org
+  userSearchBase: users
+  userAttribute: ou
+  domainSearchBase: domains
+  domainAttribute: ou
+  adminUsername: admin
+  adminAttribute: cn
+  binddnUsername: reader
+  binddnAttribute: cn
+  existingSecret: ~
+database:
+  host: tachydromos-postgresql
+  port: 5432
+  database: sogo
+  username: pgsogo
+  existingSecret: ~
 
 openldap:
+  enabled: true
   image:
     repository: docker.io/bitnami/openldap
-    tag: 2.6.4
+    tag: 2.6.6
     pullPolicy: IfNotPresent
   replicas: 1
   podAnnotations: {}
@@ -35,7 +55,7 @@ openldap:
 postfix:
   image:
     repository: docker.io/olivergregorius/postfix
-    tag: 3.8.1-alpha
+    tag: 3.8.2-alpha
     pullPolicy: Always
   replicas: 1
   podAnnotations: {}
@@ -78,7 +98,7 @@ dovecot:
 rspamd:
   image:
     repository: docker.io/olivergregorius/rspamd
-    tag: 3.5.0-alpha
+    tag: 3.6.0-alpha
     pullPolicy: Always
   replicas: 1
   podAnnotations: {}
@@ -91,7 +111,7 @@ rspamd:
       memory: 512Mi
       cpu: 1000m
   service:
-    type: NodePort
+    type: ClusterIP
     nodePorts:
       milter: ""
       webinterface: ""
@@ -111,7 +131,7 @@ rspamd:
     redis:
       image:
         repository: docker.io/redis
-        tag: 7.0.11
+        tag: 7.2.1
         pullPolicy: IfNotPresent
       resources:
         requests:
@@ -122,9 +142,10 @@ rspamd:
           cpu: 100m
 
 postgresql:
+  enabled: true
   image:
     repository: docker.io/bitnami/postgresql
-    tag: 15.3.0
+    tag: 16.0.0
     pullPolicy: IfNotPresent
   replicas: 1
   podAnnotations: {}
@@ -144,7 +165,7 @@ postgresql:
 sogo:
   image:
     repository: docker.io/olivergregorius/sogo
-    tag: 5.7.1-alpha
+    tag: 5.9.0-alpha
     pullPolicy: Always
   replicas: 1
   podAnnotations: {}
@@ -159,7 +180,7 @@ sogo:
       memory: 1.5Gi
       cpu: 500m
   service:
-    type: NodePort
+    type: ClusterIP
     nodePorts:
       http: ""
   ingress:
@@ -181,7 +202,7 @@ sogo:
   nginx:
     image:
       repository: docker.io/nginx
-      tag: 1.25.1
+      tag: 1.25.2
       pullPolicy: IfNotPresent
     resources:
       requests:

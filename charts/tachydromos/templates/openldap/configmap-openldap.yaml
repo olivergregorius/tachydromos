@@ -1,3 +1,4 @@
+{{- if .Values.openldap.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5,13 +6,14 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
-  LDAP_ROOT: dc=tachydromos,dc=org
-  LDAP_ADMIN_USERNAME: admin
-  LDAP_ADMIN_ATTRIBUTE: cn
-  LDAP_BINDDN_USERNAME: reader
-  LDAP_BINDDN_ATTRIBUTE: cn
+  LDAP_ROOT: {{ .Values.ldap.root }}
+  LDAP_ADMIN_USERNAME: {{ .Values.ldap.adminUsername }}
+  LDAP_ADMIN_ATTRIBUTE: {{ .Values.ldap.adminAttribute }}
+  LDAP_BINDDN_USERNAME: {{ .Values.ldap.binddnUsername }}
+  LDAP_BINDDN_ATTRIBUTE: {{ .Values.ldap.binddnAttribute }}
   LDAP_SKIP_DEFAULT_TREE: "yes"
   LDAP_CUSTOM_SCHEMA_DIR: /bootstrap/schemas
+{{- end}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -21,8 +23,12 @@ metadata:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
   config: |
-    ldapRoot: dc=tachydromos,dc=org
-    ldapAdminUsername: admin
-    ldapAdminAttribute: cn
-    ldapBinddnUsername: reader
-    ldapBinddnAttribute: cn
+    ldapHost: {{ .Values.ldap.host }}
+    ldapPort: {{ .Values.ldap.port}}
+    ldapRoot: {{ .Values.ldap.root }}
+    ldapUserSearchBase: {{ .Values.ldap.userSearchBase }}
+    ldapUserAttribute: {{ .Values.ldap.userAttribute }}
+    ldapDomainSearchBase: {{ .Values.ldap.domainSearchBase }}
+    ldapDomainAttribute: {{ .Values.ldap.domainAttribute }}
+    ldapBinddnUsername: {{ .Values.ldap.binddnUsername }}
+    ldapBinddnAttribute: {{ .Values.ldap.binddnAttribute }}

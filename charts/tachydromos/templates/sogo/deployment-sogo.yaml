@@ -1,3 +1,5 @@
+{{- $openldapYamlSecretName := printf "%s-openldap-yaml" (include "tachydromos.fullname" .) -}}
+{{- $postgresqlYamlSecretName := printf "%s-postgresql-yaml" (include "tachydromos.fullname" .) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -133,14 +135,14 @@ spec:
             name: {{ include "tachydromos.fullname" . }}-openldap-yaml
         - name: ldap-secret
           secret:
-            secretName: {{ include "tachydromos.fullname" . }}-openldap-yaml
+            secretName: {{ .Values.ldap.existingSecret | default $openldapYamlSecretName }}
             defaultMode: 0440
         - name: postgresql-config
           configMap:
             name: {{ include "tachydromos.fullname" . }}-postgresql-yaml
         - name: postgresql-secret
           secret:
-            secretName: {{ include "tachydromos.fullname" . }}-postgresql-yaml
+            secretName: {{ .Values.database.existingSecret | default $postgresqlYamlSecretName }}
             defaultMode: 0440
         - name: entrypoint
           configMap:

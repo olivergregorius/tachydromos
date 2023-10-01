@@ -1,5 +1,5 @@
 ARG LIBWBXML_VERSION=0.11.8
-ARG APPVERSION=5.7.1
+ARG APPVERSION
 
 FROM debian:bullseye-slim AS builder
 ENV DEBIAN_FRONTEND='noninteractive'

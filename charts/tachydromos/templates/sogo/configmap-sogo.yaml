@@ -6,7 +6,5 @@ metadata:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
   config: |
-    postgresqlHost: tachydromos-postgresql
-    postgresqlPort: 5432
     workerCount: 6
     workerMemLimitMb: 256

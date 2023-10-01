@@ -1,3 +1,5 @@
 ---
-version: 5.7.1-alpha
+repository: olivergregorius/sogo
+tag: 5.9.0-alpha
+version: 5.9.0
 arch: linux/amd64,linux/arm64

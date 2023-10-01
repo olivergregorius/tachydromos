@@ -48,10 +48,10 @@ data:
           canAuthenticate = YES;
           isAddressBook = YES;
           displayName = "Globales Addressbuch";
-          hostname = "ldap://tachydromos-openldap:1389";
+          hostname = "ldap://{{ `{{ ldapHost }}` }}:{{ `{{ ldapPort }}` }}";
           bindDN = "{{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}";
           bindPassword = "{{ `{{ ldapBinddnPassword }}` }}";
-          baseDN = "ou=users,{{ `{{ ldapRoot }}` }}";
+          baseDN = "{{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}";
           filter = "objectClass=mailAccount AND mailActive='TRUE'";
           scope = SUB;
           userPasswordAlgorithm = ssha;

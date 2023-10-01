@@ -1,12 +1,12 @@
-FROM alpine:3.18.2
+FROM alpine:3.18.3
 
-ARG DOVECOT_VERSION=2.3.20-r10
+ARG APPVERSION
 
 RUN apk add --update-cache \
-    dovecot=$DOVECOT_VERSION \
-    dovecot-lmtpd=$DOVECOT_VERSION \
-    dovecot-ldap=$DOVECOT_VERSION \
-    dovecot-pigeonhole-plugin=$DOVECOT_VERSION \
+    dovecot=$APPVERSION \
+    dovecot-lmtpd=$APPVERSION \
+    dovecot-ldap=$APPVERSION \
+    dovecot-pigeonhole-plugin=$APPVERSION \
     msmtp \
     python3 \
     py3-pip \
