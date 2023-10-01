@@ -1,4 +1,6 @@
+{{- $dovecotYamlSecretName := printf "%s-dovecot-yaml" (include "tachydromos.fullname" .) -}}
 {{- $openldapYamlSecretName := printf "%s-openldap-yaml" (include "tachydromos.fullname" .) -}}
+{{- $rspamdYamlSecretName := printf "%s-rspamd-yaml" (include "tachydromos.fullname" .) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -91,7 +93,7 @@ spec:
             name: {{ include "tachydromos.fullname" . }}-dovecot-yaml
         - name: secret
           secret:
-            secretName: {{ include "tachydromos.fullname" . }}-dovecot-yaml
+            secretName: {{ .Values.dovecot.existingSecret | default $dovecotYamlSecretName }}
             defaultMode: 0400
         - name: ldap-config
           configMap:
@@ -102,7 +104,7 @@ spec:
             defaultMode: 0400
         - name: rspamd-secret
           secret:
-            secretName: {{ include "tachydromos.fullname" . }}-rspamd-yaml
+            secretName: {{ .Values.rspamd.existingSecret | default $rspamdYamlSecretName }}
             defaultMode: 0400
         - name: entrypoint
           configMap:

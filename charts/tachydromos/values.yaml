@@ -102,6 +102,7 @@ dovecot:
       helm.sh/resource-policy: keep
   postmasterEmail: postmaster@example.org
   superuserUsername: sysmail@example.org
+  existingSecret: ~
 
 rspamd:
   image:
@@ -143,6 +144,7 @@ rspamd:
         servicePort: 11334
     secretName: tachydromos-certificate-rspamd
   dkimSelector: "2023"
+  existingSecret: ~
   sidecars:
     redis:
       image:

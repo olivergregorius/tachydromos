@@ -1,3 +1,4 @@
+{{- $rspamdYamlSecretName := printf "%s-rspamd-yaml" (include "tachydromos.fullname" .) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -102,7 +103,7 @@ spec:
             name: {{ include "tachydromos.fullname" . }}-rspamd-yaml
         - name: secret
           secret:
-            secretName: {{ include "tachydromos.fullname" . }}-rspamd-yaml
+            secretName: {{ .Values.rspamd.existingSecret | default $rspamdYamlSecretName }}
             defaultMode: 0400
         - name: entrypoint
           configMap:
