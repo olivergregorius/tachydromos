@@ -7,33 +7,37 @@ metadata:
 data:
   # /etc/dovecot/
   dovecot.conf.j2: |
+    protocols              = imap lmtp sieve
+    login_trusted_networks = 10.42.0.0/16
+
     !include conf.d/*.conf
   dovecot-ldap.conf.j2: |
-    hosts     = {{ `{{ ldapHost }}` }}:{{ `{{ ldapPort }}` }}
-    auth_bind = yes
-    dn        = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
-    dnpass    = {{ `{{ ldapBinddnPassword }}` }}
-    base      = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
-    scope     = subtree
-    deref     = never
-    pass_filter = (&(objectClass=mailAccount)(mailActive=TRUE)(mail=%u))
-    pass_attrs  = mail=user
-    iterate_filter = (&(objectClass=mailAccount)(mailActive=TRUE)
+    hosts          = {{ `{{ ldapHost }}` }}:{{ `{{ ldapPort }}` }}
+    dn             = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
+    dnpass         = {{ `{{ ldapBinddnPassword }}` }}
+    auth_bind      = yes
+    base           = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
+    deref          = never
+    scope          = subtree
+    user_attrs     = mailQuotaMb=quota_rule=*:bytes=%$M
+    user_filter    = (&(objectClass=mailAccount)(mailActive=TRUE)(mail=%u))
+    pass_attrs     = mail=user
+    pass_filter    = (&(objectClass=mailAccount)(mailActive=TRUE)(mail=%u))
     iterate_attrs  = mail=user
-    user_filter = (&(objectClass=mailAccount)(mailActive=TRUE)(mail=%u))
-    user_attrs  = mailQuotaMb=quota_rule=*:bytes=%$M
+    iterate_filter = (&(objectClass=mailAccount)(mailActive=TRUE)
   # /etc/dovecot/conf.d/
   10-auth.conf.j2: |
-    disable_plaintext_auth = yes
-    login_trusted_networks = 10.42.0.0/16
     auth_mechanisms        = plain login
-  10-ldap.conf.j2: |
+    disable_plaintext_auth = yes
+
+    !include auth-ldap.conf.ext
+  auth-ldap.conf.ext.j2: |
     passdb {
       driver = ldap
       args   = /etc/dovecot/dovecot-ldap.conf
     }
 
-      userdb {
+    userdb {
       driver = ldap
       args   = /etc/dovecot/dovecot-ldap.conf
     }
@@ -41,17 +45,16 @@ data:
     log_path       = /dev/null
     info_log_path  = /dev/null
     debug_log_path = /dev/null
-    auth_debug = no
+    auth_debug     = no
   10-mail.conf.j2: |
-    mail_uid              = vmail
-    mail_gid              = vmail
-    mail_privileged_group = vmail
     mail_home             = /srv/dovecot/mailboxes/%d/%n
     mail_location         = maildir:~/mail:LAYOUT=fs
-
     namespace inbox {
       inbox = yes
     }
+    mail_uid              = vmail
+    mail_gid              = vmail
+    mail_privileged_group = vmail
   10-master.conf.j2: |
     service imap-login {
       inet_listener imap {
@@ -81,21 +84,9 @@ data:
             port = 4190
         }
     }
-  10-protocol.conf.j2: |
-    protocols = imap lmtp sieve
+  15-lda.conf.j2: |
     postmaster_address = {{ `{{ postmasterEmail }}` }}
-
-    sendmail_path = /usr/bin/msmtp
-
-    protocol imap {
-      mail_plugins                = $mail_plugins quota imap_quota imap_sieve
-      mail_max_userip_connections = 20
-      imap_idle_notify_interval   = 29 mins
-    }
-
-    protocol lmtp {
-      mail_plugins       = $mail_plugins sieve
-    }
+    sendmail_path      = /usr/bin/msmtp
   15-mailboxes.conf.j2: |
     namespace inbox {
       mailbox Drafts {
@@ -117,9 +108,15 @@ data:
     }
   20-imap.conf.j2: |
     protocol imap {
-
+      mail_plugins                = $mail_plugins quota imap_quota imap_sieve
+      mail_max_userip_connections = 20
+      imap_idle_notify_interval   = 29 mins
     }
-  90-plugins.conf.j2: |
+  20-lmtp.conf.j2: |
+    protocol lmtp {
+      mail_plugins = $mail_plugins sieve
+    }
+  90-plugin.conf.j2: |
     plugin {
       # Quota
       quota                  = maildir

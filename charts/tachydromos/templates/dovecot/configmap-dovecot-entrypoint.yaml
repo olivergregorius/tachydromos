@@ -120,14 +120,15 @@ data:
     generate_config('dovecot-ldap.conf.j2', configDir)
 
     generate_config('10-auth.conf.j2', confdDir)
-    generate_config('10-ldap.conf.j2', confdDir)
+    generate_config('auth-ldap.conf.ext.j2', confdDir)
     generate_config('10-logging.conf.j2', confdDir)
     generate_config('10-mail.conf.j2', confdDir)
     generate_config('10-master.conf.j2', confdDir)
-    generate_config('10-protocol.conf.j2', confdDir)
+    generate_config('15-lda.conf.j2', confdDir)
     generate_config('15-mailboxes.conf.j2', confdDir)
     generate_config('20-imap.conf.j2', confdDir)
-    generate_config('90-plugins.conf.j2', confdDir)
+    generate_config('20-lmtp.conf.j2', confdDir)
+    generate_config('90-plugin.conf.j2', confdDir)
 
     generate_config('spam-global.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o600)
     generate_config('learn-ham.sh.j2', sieveGlobalDir, 'vmail', 'vmail', 0o700)
