@@ -12,7 +12,7 @@ RUN apk add --update-cache \
 
 RUN pip3 install jinja2 pyyaml
 
-# Main process must run as root - needs permissions for spawning new processes and binding to ports < 1024
+# Main process must run as root - needs permissions for templating config files and spawning new processes
 USER root
 
 # Milter | Webinterface
