@@ -1,21 +1,21 @@
-{{- if and (.Values.openldap.enabled) (.Values.openldap.persistence.enabled) }}
+{{- if and (.Values.ldap.openldap.enabled) (.Values.ldap.openldap.persistence.enabled) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "tachydromos.fullname" . }}-openldap
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
-  {{- with .Values.openldap.persistence.annotations }}
+  {{- with .Values.ldap.openldap.persistence.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  storageClassName: {{ .Values.openldap.persistence.storageClassName }}
+  storageClassName: {{ .Values.ldap.openldap.persistence.storageClassName }}
   accessModes:
-    {{- range .Values.openldap.persistence.accessModes }}
+    {{- range .Values.ldap.openldap.persistence.accessModes }}
     - {{ . | quote }}
     {{- end }}
   resources:
     requests:
-      storage: {{ .Values.openldap.persistence.size }}
+      storage: {{ .Values.ldap.openldap.persistence.size }}
 {{- end }}

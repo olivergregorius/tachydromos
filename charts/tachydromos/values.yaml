@@ -3,7 +3,36 @@ fullnameOverride: ""
 imagePullSecrets: []
 
 hostname: testmail.gregorius.tech
+
 ldap:
+  openldap:
+    enabled: true
+    image:
+      repository: docker.io/bitnami/openldap
+      tag: 2.6.6
+      pullPolicy: IfNotPresent
+    replicas: 1
+    podAnnotations: { }
+    podSecurityContext: { }
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 50m
+      limits:
+        memory: 64Mi
+        cpu: 100m
+    service:
+      type: NodePort
+      nodePorts:
+        ldap: ""
+    persistence:
+      enabled: false
+      storageClassName: longhorn
+      accessModes:
+        - ReadWriteOnce
+      size: 1Gi
+      annotations:
+        helm.sh/resource-policy: keep
   host: tachydromos-openldap
   port: 389
   root: dc=tachydromos,dc=org
@@ -16,41 +45,41 @@ ldap:
   binddnUsername: reader
   binddnAttribute: cn
   existingSecret: ~
+
 database:
+  postgresql:
+    enabled: true
+    image:
+      repository: docker.io/bitnami/postgresql
+      tag: 16.0.0
+      pullPolicy: IfNotPresent
+    replicas: 1
+    podAnnotations: { }
+    podSecurityContext: { }
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 200m
+      limits:
+        memory: 512Mi
+        cpu: 1000m
+    service:
+      type: NodePort
+      nodePorts:
+        psql: ""
+    persistence:
+      enabled: false
+      storageClassName: longhorn
+      accessModes:
+        - ReadWriteOnce
+      size: 1Gi
+      annotations:
+        helm.sh/resource-policy: keep
   host: tachydromos-postgresql
   port: 5432
   database: sogo
   username: pgsogo
   existingSecret: ~
-
-openldap:
-  enabled: true
-  image:
-    repository: docker.io/bitnami/openldap
-    tag: 2.6.6
-    pullPolicy: IfNotPresent
-  replicas: 1
-  podAnnotations: {}
-  podSecurityContext: {}
-  resources:
-    requests:
-      memory: 32Mi
-      cpu: 50m
-    limits:
-      memory: 64Mi
-      cpu: 100m
-  service:
-    type: NodePort
-    nodePorts:
-      ldap: ""
-  persistence:
-    enabled: false
-    storageClassName: longhorn
-    accessModes:
-      - ReadWriteOnce
-    size: 1Gi
-    annotations:
-      helm.sh/resource-policy: keep
 
 postfix:
   image:
@@ -158,35 +187,6 @@ rspamd:
         limits:
           memory: 64Mi
           cpu: 100m
-
-postgresql:
-  enabled: true
-  image:
-    repository: docker.io/bitnami/postgresql
-    tag: 16.0.0
-    pullPolicy: IfNotPresent
-  replicas: 1
-  podAnnotations: {}
-  podSecurityContext: {}
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 200m
-    limits:
-      memory: 512Mi
-      cpu: 1000m
-  service:
-    type: NodePort
-    nodePorts:
-      psql: ""
-  persistence:
-    enabled: false
-    storageClassName: longhorn
-    accessModes:
-      - ReadWriteOnce
-    size: 1Gi
-    annotations:
-      helm.sh/resource-policy: keep
 
 sogo:
   image:

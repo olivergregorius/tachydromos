@@ -1,4 +1,4 @@
-{{- if .Values.openldap.enabled }}
+{{- if .Values.ldap.openldap.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

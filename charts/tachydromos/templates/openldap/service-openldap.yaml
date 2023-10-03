@@ -1,4 +1,4 @@
-{{- if .Values.openldap.enabled }}
+{{- if .Values.ldap.openldap.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.openldap.service.type }}
+  type: {{ .Values.ldap.openldap.service.type }}
   selector:
     app.kubernetes.io/name: tachydromos-openldap
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -15,7 +15,7 @@ spec:
       port: 1389
       targetPort: ldap
       protocol: TCP
-      {{- if and (eq .Values.openldap.service.type "NodePort") (not (empty .Values.openldap.service.nodePorts.ldap)) }}
-      nodePort: {{ .Values.openldap.service.nodePorts.ldap }}
+      {{- if and (eq .Values.ldap.openldap.service.type "NodePort") (not (empty .Values.ldap.openldap.service.nodePorts.ldap)) }}
+      nodePort: {{ .Values.ldap.openldap.service.nodePorts.ldap }}
       {{- end }}
 {{- end }}

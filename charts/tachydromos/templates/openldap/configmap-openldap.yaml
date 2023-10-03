@@ -1,4 +1,5 @@
-{{- if .Values.openldap.enabled }}
+{{- $defaultHost := printf "%s-openldap" (include "tachydromos.fullname" .) -}}
+{{- if .Values.ldap.openldap.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -23,12 +24,12 @@ metadata:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
   config: |
-    ldapHost: {{ .Values.ldap.host }}
-    ldapPort: {{ .Values.ldap.port}}
+    ldapHost: {{ ternary $defaultHost .Values.ldap.host .Values.ldap.openldap.enabled }}
+    ldapPort: {{ ternary 389 .Values.ldap.port .Values.ldap.openldap.enabled }}
     ldapRoot: {{ .Values.ldap.root }}
-    ldapUserSearchBase: {{ .Values.ldap.userSearchBase }}
-    ldapUserAttribute: {{ .Values.ldap.userAttribute }}
-    ldapDomainSearchBase: {{ .Values.ldap.domainSearchBase }}
-    ldapDomainAttribute: {{ .Values.ldap.domainAttribute }}
+    ldapUserSearchBase: {{ ternary "users" .Values.ldap.userSearchBase .Values.ldap.openldap.enabled }}
+    ldapUserAttribute: {{ ternary "ou" .Values.ldap.userAttribute .Values.ldap.openldap.enabled }}
+    ldapDomainSearchBase: {{ ternary "domains" .Values.ldap.domainSearchBase .Values.ldap.openldap.enabled }}
+    ldapDomainAttribute: {{ ternary "ou" .Values.ldap.domainAttribute .Values.ldap.openldap.enabled }}
     ldapBinddnUsername: {{ .Values.ldap.binddnUsername }}
     ldapBinddnAttribute: {{ .Values.ldap.binddnAttribute }}
