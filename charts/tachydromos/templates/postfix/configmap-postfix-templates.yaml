@@ -195,10 +195,10 @@ data:
     virtual_transport = lmtp:dovecot:24
 
     # Milter
-    smtpd_milters =         inet:tachydromos-rspamd:11332
-    non_smtpd_milters =     inet:tachydromos-rspamd:11332
-    milter_protocol =       6
-    milter_mail_macros =    i {mail_addr} {client_addr} {client_name} {auth_authen}
+    smtpd_milters         = inet:tachydromos-rspamd:11332
+    non_smtpd_milters     = inet:tachydromos-rspamd:11332
+    milter_protocol       = 6
+    milter_mail_macros    = i {mail_addr} {client_addr} {client_name} {auth_authen}
     milter_default_action = accept
 
     # Relay restrictions
