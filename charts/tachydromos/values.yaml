@@ -131,6 +131,9 @@ dovecot:
   postmasterEmail: postmaster@example.org
   superuserUsername: sysmail@example.org
   existingSecret: ~
+  extraVolumeMounts: []
+  extraVolumes: []
+  sidecars: []
 
 rspamd:
   image:
