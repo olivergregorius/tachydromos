@@ -107,10 +107,10 @@ postfix:
 
 dovecot:
   image:
-    repository: docker.io/olivergregorius/dovecot
+    registry: docker.io
+    repository: olivergregorius/dovecot
     tag: 2.3.20-alpha
     pullPolicy: Always
-  replicas: 1
   podAnnotations: {}
   podSecurityContext: {}
   resources:

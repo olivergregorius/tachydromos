@@ -8,7 +8,7 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.dovecot.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: tachydromos-dovecot
@@ -40,7 +40,7 @@ spec:
         {{- toYaml .Values.dovecot.podSecurityContext | nindent 8 }}
       containers:
         - name: dovecot
-          image: "{{ .Values.dovecot.image.repository }}:{{ .Values.dovecot.image.tag }}"
+          image: "{{ .Values.dovecot.image.registry }}/{{ .Values.dovecot.image.repository }}:{{ .Values.dovecot.image.tag }}"
           imagePullPolicy: {{ .Values.dovecot.image.pullPolicy }}
           command:
             - /entrypoint.py
