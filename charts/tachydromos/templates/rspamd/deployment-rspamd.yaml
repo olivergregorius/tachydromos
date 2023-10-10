@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.rspamd.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: tachydromos-rspamd
@@ -35,7 +35,7 @@ spec:
         {{- toYaml .Values.rspamd.podSecurityContext | nindent 8 }}
       containers:
         - name: rspamd
-          image: "{{ .Values.rspamd.image.repository }}:{{ .Values.rspamd.image.tag }}"
+          image: "{{ .Values.rspamd.image.registry }}/{{ .Values.rspamd.image.repository }}:{{ .Values.rspamd.image.tag }}"
           imagePullPolicy: {{ .Values.rspamd.image.pullPolicy }}
           command:
             - /entrypoint.py
@@ -63,7 +63,7 @@ spec:
             - name: data
               mountPath: /var/lib/rspamd
         - name: redis
-          image: "{{ .Values.rspamd.sidecars.redis.image.repository }}:{{ .Values.rspamd.sidecars.redis.image.tag }}"
+          image: "{{ .Values.rspamd.sidecars.redis.image.registry }}/{{ .Values.rspamd.sidecars.redis.image.repository }}:{{ .Values.rspamd.sidecars.redis.image.tag }}"
           imagePullPolicy: {{ .Values.rspamd.sidecars.redis.image.pullPolicy }}
           ports:
             - name: redis

@@ -134,10 +134,10 @@ dovecot:
 
 rspamd:
   image:
-    repository: docker.io/olivergregorius/rspamd
+    registry: docker.io
+    repository: olivergregorius/rspamd
     tag: 3.6.0-alpha
     pullPolicy: Always
-  replicas: 1
   podAnnotations: {}
   podSecurityContext: {}
   resources:
@@ -176,7 +176,8 @@ rspamd:
   sidecars:
     redis:
       image:
-        repository: docker.io/redis
+        registry: docker.io
+        repository: redis
         tag: 7.2.1
         pullPolicy: IfNotPresent
       resources:
