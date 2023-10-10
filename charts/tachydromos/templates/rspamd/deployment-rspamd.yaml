@@ -63,8 +63,8 @@ spec:
             - name: data
               mountPath: /var/lib/rspamd
         - name: redis
-          image: "{{ .Values.rspamd.sidecars.redis.image.registry }}/{{ .Values.rspamd.sidecars.redis.image.repository }}:{{ .Values.rspamd.sidecars.redis.image.tag }}"
-          imagePullPolicy: {{ .Values.rspamd.sidecars.redis.image.pullPolicy }}
+          image: "{{ .Values.rspamd.redis.image.registry }}/{{ .Values.rspamd.redis.image.repository }}:{{ .Values.rspamd.redis.image.tag }}"
+          imagePullPolicy: {{ .Values.rspamd.redis.image.pullPolicy }}
           ports:
             - name: redis
               containerPort: 6379
@@ -79,7 +79,7 @@ spec:
             timeoutSeconds: 10
             periodSeconds: 30
           resources:
-          {{- toYaml .Values.rspamd.sidecars.redis.resources | nindent 12 }}
+            {{- toYaml .Values.rspamd.redis.resources | nindent 12 }}
           volumeMounts:
             - name: redis-config
               subPath: redis.conf

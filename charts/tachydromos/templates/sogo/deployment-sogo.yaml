@@ -42,7 +42,7 @@ spec:
         - name: sogo-static-files-prepare
           securityContext:
             runAsUser: 0
-          image: "{{ .Values.sogo.image.repository }}:{{ .Values.sogo.image.tag }}"
+          image: "{{ .Values.sogo.image.registry }}/{{ .Values.sogo.image.repository }}:{{ .Values.sogo.image.tag }}"
           imagePullPolicy: {{ .Values.sogo.image.pullPolicy }}
           command:
             - rsync
@@ -54,7 +54,7 @@ spec:
               mountPath: /mnt/static-files
       containers:
         - name: sogo
-          image: "{{ .Values.sogo.image.repository }}:{{ .Values.sogo.image.tag }}"
+          image: "{{ .Values.sogo.image.registry }}/{{ .Values.sogo.image.repository }}:{{ .Values.sogo.image.tag }}"
           imagePullPolicy: {{ .Values.sogo.image.pullPolicy }}
           command:
             - /entrypoint.py
@@ -88,7 +88,7 @@ spec:
             - name: data
               mountPath: /usr/lib/GNUstep/SOGo
         - name: nginx
-          image: "{{ .Values.sogo.nginx.image.repository }}:{{ .Values.sogo.nginx.image.tag }}"
+          image: "{{ .Values.sogo.nginx.image.registry }}/{{ .Values.sogo.nginx.image.repository }}:{{ .Values.sogo.nginx.image.tag }}"
           imagePullPolicy: {{ .Values.sogo.nginx.image.pullPolicy }}
           ports:
             - name: http
@@ -115,7 +115,7 @@ spec:
               subPath: sogo.nginx.conf
               mountPath: /etc/nginx/conf.d/sogo.nginx.conf
         - name: memcached
-          image: "{{ .Values.sogo.memcached.image.repository }}:{{ .Values.sogo.memcached.image.tag }}"
+          image: "{{ .Values.sogo.memcached.image.registry }}/{{ .Values.sogo.memcached.image.repository }}:{{ .Values.sogo.memcached.image.tag }}"
           imagePullPolicy: {{ .Values.sogo.memcached.image.pullPolicy }}
           ports:
             - name: memcached

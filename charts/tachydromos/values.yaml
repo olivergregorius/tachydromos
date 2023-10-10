@@ -173,24 +173,24 @@ rspamd:
     secretName: tachydromos-certificate-rspamd
   dkimSelector: "2023"
   existingSecret: ~
-  sidecars:
-    redis:
-      image:
-        registry: docker.io
-        repository: redis
-        tag: 7.2.1
-        pullPolicy: IfNotPresent
-      resources:
-        requests:
-          memory: 32Mi
-          cpu: 50m
-        limits:
-          memory: 64Mi
-          cpu: 100m
+  redis:
+    image:
+      registry: docker.io
+      repository: redis
+      tag: 7.2.1
+      pullPolicy: IfNotPresent
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 50m
+      limits:
+        memory: 64Mi
+        cpu: 100m
 
 sogo:
   image:
-    repository: docker.io/olivergregorius/sogo
+    registry: docker.io
+    repository: olivergregorius/sogo
     tag: 5.9.0-alpha
     pullPolicy: Always
   replicas: 1
@@ -219,7 +219,7 @@ sogo:
       nginx.ingress.kubernetes.io/proxy-buffering: "on"
       nginx.ingress.kubernetes.io/proxy-buffers-number: "64"
       nginx.ingress.kubernetes.io/proxy-buffer-size: "512k"
-    hostname: ""
+    hostname: ~
     paths:
       - path: /
         serviceName: sogo
@@ -227,7 +227,8 @@ sogo:
     secretName: tachydromos-certificate
   nginx:
     image:
-      repository: docker.io/nginx
+      registry: docker.io
+      repository: nginx
       tag: 1.25.2
       pullPolicy: IfNotPresent
     resources:
@@ -239,7 +240,8 @@ sogo:
         cpu: 100m
   memcached:
     image:
-      repository: docker.io/memcached
+      registry: docker.io
+      repository: memcached
       tag: 1.6.21
       pullPolicy: IfNotPresent
     resources:
