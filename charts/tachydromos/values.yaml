@@ -45,15 +45,15 @@ ldap:
   existingSecret: ~
 
 database:
-  postgresql:
+  embedded:
     enabled: true
     image:
-      repository: docker.io/bitnami/postgresql
+      registry: docker.io
+      repository: bitnami/postgresql
       tag: 16.0.0
       pullPolicy: IfNotPresent
-    replicas: 1
-    podAnnotations: { }
-    podSecurityContext: { }
+    podAnnotations: {}
+    podSecurityContext: {}
     resources:
       requests:
         memory: 256Mi

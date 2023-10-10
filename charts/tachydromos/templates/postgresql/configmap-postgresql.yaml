@@ -1,5 +1,5 @@
 {{- $defaultHost := printf "%s-postgresql" (include "tachydromos.fullname" .) -}}
-{{- if .Values.database.postgresql.enabled }}
+{{- if .Values.database.embedded.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -19,7 +19,7 @@ metadata:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
   config: |
-    postgresqlHost: {{ ternary $defaultHost .Values.database.host .Values.database.postgresql.enabled }}
-    postgresqlPort: {{ ternary 5432 .Values.database.port .Values.database.postgresql.enabled }}
+    postgresqlHost: {{ ternary $defaultHost .Values.database.host .Values.database.embedded.enabled }}
+    postgresqlPort: {{ ternary 5432 .Values.database.port .Values.database.embedded.enabled }}
     postgresqlDatabase: {{ .Values.database.database }}
     postgresqlUsername: {{ .Values.database.username }}

@@ -1,21 +1,21 @@
-{{- if and (.Values.database.postgresql.enabled) (.Values.database.postgresql.persistence.enabled) }}
+{{- if and (.Values.database.embedded.enabled) (.Values.database.embedded.persistence.enabled) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "tachydromos.fullname" . }}-postgresql
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
-  {{- with .Values.database.postgresql.persistence.annotations }}
+  {{- with .Values.database.embedded.persistence.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  storageClassName: {{ .Values.database.postgresql.persistence.storageClassName }}
+  storageClassName: {{ .Values.database.embedded.persistence.storageClassName }}
   accessModes:
-    {{- range .Values.database.postgresql.persistence.accessModes }}
+    {{- range .Values.database.embedded.persistence.accessModes }}
     - {{ . | quote }}
     {{- end }}
   resources:
     requests:
-      storage: {{ .Values.database.postgresql.persistence.size }}
+      storage: {{ .Values.database.embedded.persistence.size }}
 {{- end }}

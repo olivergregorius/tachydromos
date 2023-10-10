@@ -1,4 +1,4 @@
-{{- if .Values.database.postgresql.enabled }}
+{{- if .Values.database.embedded.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.database.postgresql.service.type }}
+  type: {{ .Values.database.embedded.service.type }}
   selector:
     app.kubernetes.io/name: tachydromos-postgresql
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -15,7 +15,7 @@ spec:
       port: 5432
       targetPort: psql
       protocol: TCP
-      {{- if and (eq .Values.database.postgresql.service.type "NodePort") (not (empty .Values.database.postgresql.service.nodePorts.psql)) }}
-      nodePort: {{ .Values.database.postgresql.service.nodePorts.psql }}
+      {{- if and (eq .Values.database.embedded.service.type "NodePort") (not (empty .Values.database.embedded.service.nodePorts.psql)) }}
+      nodePort: {{ .Values.database.embedded.service.nodePorts.psql }}
       {{- end }}
 {{- end}}
