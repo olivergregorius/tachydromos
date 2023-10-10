@@ -36,7 +36,7 @@ spec:
         {{- toYaml .Values.postfix.podSecurityContext | nindent 8 }}
       containers:
         - name: postfix
-          image: "{{ .Values.postfix.image.repository }}:{{ .Values.postfix.image.tag }}"
+          image: "{{ .Values.postfix.image.registry }}/{{ .Values.postfix.image.repository }}:{{ .Values.postfix.image.tag }}"
           imagePullPolicy: {{ .Values.postfix.image.pullPolicy }}
           command:
             - /entrypoint.py

@@ -81,7 +81,8 @@ database:
 
 postfix:
   image:
-    repository: docker.io/olivergregorius/postfix
+    registry: docker.io
+    repository: olivergregorius/postfix
     tag: 3.8.2-alpha
     pullPolicy: Always
   replicas: 1
