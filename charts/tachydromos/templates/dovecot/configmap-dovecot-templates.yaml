@@ -13,10 +13,10 @@ data:
     !include conf.d/*.conf
   dovecot-ldap.conf.j2: |
     hosts          = {{ `{{ ldapHost }}` }}:{{ `{{ ldapPort }}` }}
-    dn             = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
+    dn             = {{ `{{ ldapBinddnAttributeType }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRootDn }}` }}
     dnpass         = {{ `{{ ldapBinddnPassword }}` }}
     auth_bind      = yes
-    base           = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
+    base           = {{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRootDn }}` }}
     deref          = never
     scope          = subtree
     user_attrs     = mailQuotaMb=quota_rule=*:bytes=%$M

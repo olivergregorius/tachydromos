@@ -281,9 +281,9 @@ data:
     server_host = {{ `{{ ldapHost }}` }}
     server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
-    bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
+    bind_dn     = {{ `{{ ldapBinddnAttributeType }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRootDn }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRootDn }}` }}
     scope       = sub
     dereference = 0
     version     = 3
@@ -293,9 +293,9 @@ data:
     server_host = {{ `{{ ldapHost }}` }}
     server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
-    bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
+    bind_dn     = {{ `{{ ldapBinddnAttributeType }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRootDn }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRootDn }}` }}
     scope       = sub
     dereference = 0
     version     = 3
@@ -305,9 +305,9 @@ data:
     server_host = {{ `{{ ldapHost }}` }}
     server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
-    bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
+    bind_dn     = {{ `{{ ldapBinddnAttributeType }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRootDn }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = {{ `{{ ldapDomainAttribute }}` }}={{ `{{ ldapDomainSearchBase }}` }},{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapDomainSearchBase }}` }},{{ `{{ ldapRootDn }}` }}
     scope       = sub
     dereference = 0
     version     = 3
@@ -317,9 +317,9 @@ data:
     server_host = {{ `{{ ldapHost }}` }}
     server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
-    bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
+    bind_dn     = {{ `{{ ldapBinddnAttributeType }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRootDn }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRootDn }}` }}
     scope       = sub
     dereference = 0
     version     = 3
@@ -330,9 +330,9 @@ data:
     server_host = {{ `{{ ldapHost }}` }}
     server_port = {{ `{{ ldapPort }}` }}
     bind        = yes
-    bind_dn     = {{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}
+    bind_dn     = {{ `{{ ldapBinddnAttributeType }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRootDn }}` }}
     bind_pw     = {{ `{{ ldapBinddnPassword }}` }}
-    search_base = {{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}
+    search_base = {{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRootDn }}` }}
     scope       = sub
     dereference = 0
     version     = 3

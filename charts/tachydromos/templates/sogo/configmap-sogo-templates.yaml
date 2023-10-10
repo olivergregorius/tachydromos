@@ -49,9 +49,9 @@ data:
           isAddressBook = YES;
           displayName = "Globales Addressbuch";
           hostname = "ldap://{{ `{{ ldapHost }}` }}:{{ `{{ ldapPort }}` }}";
-          bindDN = "{{ `{{ ldapBinddnAttribute }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRoot }}` }}";
+          bindDN = "{{ `{{ ldapBinddnAttributeType }}` }}={{ `{{ ldapBinddnUsername }}` }},{{ `{{ ldapRootDn }}` }}";
           bindPassword = "{{ `{{ ldapBinddnPassword }}` }}";
-          baseDN = "{{ `{{ ldapUserAttribute }}` }}={{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRoot }}` }}";
+          baseDN = "{{ `{{ ldapUserSearchBase }}` }},{{ `{{ ldapRootDn }}` }}";
           filter = "objectClass=mailAccount AND mailActive='TRUE'";
           scope = SUB;
           userPasswordAlgorithm = ssha;

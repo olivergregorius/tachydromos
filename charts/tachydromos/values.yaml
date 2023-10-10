@@ -5,15 +5,15 @@ imagePullSecrets: []
 hostname: testmail.gregorius.tech
 
 ldap:
-  openldap:
+  embedded:
     enabled: true
     image:
-      repository: docker.io/bitnami/openldap
+      registry: docker.io
+      repository: bitnami/openldap
       tag: 2.6.6
       pullPolicy: IfNotPresent
-    replicas: 1
-    podAnnotations: { }
-    podSecurityContext: { }
+    podAnnotations: {}
+    podSecurityContext: {}
     resources:
       requests:
         memory: 32Mi
@@ -35,15 +35,13 @@ ldap:
         helm.sh/resource-policy: keep
   host: tachydromos-openldap
   port: 389
-  root: dc=tachydromos,dc=org
-  userSearchBase: users
-  userAttribute: ou
+  rootDn: dc=tachydromos,dc=org
+  userSearchBase: ou=users
   domainSearchBase: domains
-  domainAttribute: ou
   adminUsername: admin
-  adminAttribute: cn
+  adminAttributeType: cn
   binddnUsername: reader
-  binddnAttribute: cn
+  binddnAttributeType: cn
   existingSecret: ~
 
 database:

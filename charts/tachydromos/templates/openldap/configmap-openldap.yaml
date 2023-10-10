@@ -1,5 +1,5 @@
 {{- $defaultHost := printf "%s-openldap" (include "tachydromos.fullname" .) -}}
-{{- if .Values.ldap.openldap.enabled }}
+{{- if .Values.ldap.embedded.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,11 +7,11 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
-  LDAP_ROOT: {{ .Values.ldap.root }}
+  LDAP_ROOT: {{ .Values.ldap.rootDn }}
   LDAP_ADMIN_USERNAME: {{ .Values.ldap.adminUsername }}
-  LDAP_ADMIN_ATTRIBUTE: {{ .Values.ldap.adminAttribute }}
+  LDAP_ADMIN_ATTRIBUTE_TYPE: {{ .Values.ldap.adminAttributeType }}
   LDAP_BINDDN_USERNAME: {{ .Values.ldap.binddnUsername }}
-  LDAP_BINDDN_ATTRIBUTE: {{ .Values.ldap.binddnAttribute }}
+  LDAP_BINDDN_ATTRIBUTE_TYPE: {{ .Values.ldap.binddnAttributeType }}
   LDAP_SKIP_DEFAULT_TREE: "yes"
   LDAP_CUSTOM_SCHEMA_DIR: /bootstrap/schemas
 {{- end}}
@@ -24,12 +24,10 @@ metadata:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
   config: |
-    ldapHost: {{ ternary $defaultHost .Values.ldap.host .Values.ldap.openldap.enabled }}
-    ldapPort: {{ ternary 389 .Values.ldap.port .Values.ldap.openldap.enabled }}
-    ldapRoot: {{ .Values.ldap.root }}
-    ldapUserSearchBase: {{ ternary "users" .Values.ldap.userSearchBase .Values.ldap.openldap.enabled }}
-    ldapUserAttribute: {{ ternary "ou" .Values.ldap.userAttribute .Values.ldap.openldap.enabled }}
-    ldapDomainSearchBase: {{ ternary "domains" .Values.ldap.domainSearchBase .Values.ldap.openldap.enabled }}
-    ldapDomainAttribute: {{ ternary "ou" .Values.ldap.domainAttribute .Values.ldap.openldap.enabled }}
+    ldapHost: {{ ternary $defaultHost .Values.ldap.host .Values.ldap.embedded.enabled }}
+    ldapPort: {{ ternary 389 .Values.ldap.port .Values.ldap.embedded.enabled }}
+    ldapRootDn: {{ .Values.ldap.rootDn }}
+    ldapUserSearchBase: {{ ternary "ou=users" .Values.ldap.userSearchBase .Values.ldap.embedded.enabled }}
+    ldapDomainSearchBase: {{ ternary "ou=domains" .Values.ldap.domainSearchBase .Values.ldap.embedded.enabled }}
     ldapBinddnUsername: {{ .Values.ldap.binddnUsername }}
-    ldapBinddnAttribute: {{ .Values.ldap.binddnAttribute }}
+    ldapBinddnAttributeType: {{ .Values.ldap.binddnAttributeType }}
