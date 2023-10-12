@@ -46,7 +46,7 @@ spec:
             - configMapRef:
                 name: {{ include "tachydromos.fullname" . }}-openldap-env
             - secretRef:
-                name: {{ .Values.ldap.existingSecret | default $openldapEnvSecretName }}
+                name: {{ .Values.ldap.embedded.existingSecret | default $openldapEnvSecretName }}
           resources:
             {{- toYaml .Values.ldap.embedded.resources | nindent 12 }}
           volumeMounts:
