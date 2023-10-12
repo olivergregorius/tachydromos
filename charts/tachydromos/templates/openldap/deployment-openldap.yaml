@@ -58,6 +58,12 @@ spec:
             - name: data
               mountPath: /bitnami/openldap
             {{- end }}
+            {{- with .Values.ldap.embedded.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- with .Values.ldap.embedded.sidecars }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       volumes:
         - name: schemas
           configMap:
@@ -69,6 +75,9 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "tachydromos.fullname" . }}-openldap
+        {{- end }}
+        {{- with .Values.ldap.embedded.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

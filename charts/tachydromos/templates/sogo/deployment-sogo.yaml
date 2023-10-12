@@ -87,6 +87,9 @@ spec:
               subPath: entrypoint.py
             - name: data
               mountPath: /usr/lib/GNUstep/SOGo
+            {{- with .Values.sogo.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
         - name: nginx
           image: "{{ .Values.sogo.nginx.image.registry }}/{{ .Values.sogo.nginx.image.repository }}:{{ .Values.sogo.nginx.image.tag }}"
           imagePullPolicy: {{ .Values.sogo.nginx.image.pullPolicy }}
@@ -123,6 +126,9 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.sogo.memcached.resources | nindent 12 }}
+        {{- with .Values.sogo.sidecars }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       volumes:
         - name: templates
           configMap:
@@ -152,7 +158,10 @@ spec:
           configMap:
             name: {{ include "tachydromos.fullname" . }}-sogo-nginx
         - name: data
-          emptyDir: {} # TODO PVC
+          emptyDir: {}
+        {{- with .Values.sogo.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

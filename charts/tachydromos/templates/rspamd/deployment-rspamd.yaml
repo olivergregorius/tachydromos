@@ -62,9 +62,15 @@ spec:
               subPath: entrypoint.py
             - name: data
               mountPath: /var/lib/rspamd
+            {{- with .Values.rspamd.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
         - name: redis
           image: "{{ .Values.rspamd.redis.image.registry }}/{{ .Values.rspamd.redis.image.repository }}:{{ .Values.rspamd.redis.image.tag }}"
           imagePullPolicy: {{ .Values.rspamd.redis.image.pullPolicy }}
+          command:
+            - redis-server
+            - /usr/local/etc/redis/redis.conf
           ports:
             - name: redis
               containerPort: 6379
@@ -87,9 +93,9 @@ spec:
             - name: data
               subPath: redis
               mountPath: /var/lib/redis
-          command:
-            - redis-server
-            - /usr/local/etc/redis/redis.conf
+        {{- with .Values.rspamd.sidecars }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       volumes:
         - name: templates
           configMap:
@@ -115,6 +121,9 @@ spec:
         - name: redis-config
           configMap:
             name: {{ include "tachydromos.fullname" . }}-rspamd-redis
+        {{- with .Values.rspamd.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -33,6 +33,9 @@ ldap:
       size: 1Gi
       annotations:
         helm.sh/resource-policy: keep
+    extraVolumeMounts: []
+    extraVolumes: []
+    sidecars: []
   host: tachydromos-openldap
   port: 389
   rootDn: dc=tachydromos,dc=org
@@ -73,6 +76,9 @@ database:
       size: 1Gi
       annotations:
         helm.sh/resource-policy: keep
+    extraVolumeMounts: []
+    extraVolumes: []
+    sidecars: []
   host: tachydromos-postgresql
   port: 5432
   database: sogo
@@ -100,6 +106,9 @@ postfix:
     nodePorts:
       smtp: ""
       submission: ""
+  extraVolumeMounts: []
+  extraVolumes: []
+  sidecars: []
   enableProxyProtocol: true
   heloWhitelist: ""
   postscreenWhitelist: ""
@@ -128,12 +137,12 @@ dovecot:
     size: 1Gi
     annotations:
       helm.sh/resource-policy: keep
-  postmasterEmail: postmaster@example.org
-  superuserUsername: sysmail@example.org
-  existingSecret: ~
   extraVolumeMounts: []
   extraVolumes: []
   sidecars: []
+  postmasterEmail: postmaster@example.org
+  superuserUsername: sysmail@example.org
+  existingSecret: ~
 
 rspamd:
   image:
@@ -174,6 +183,9 @@ rspamd:
         serviceName: rspamd
         servicePort: 11334
     secretName: tachydromos-certificate-rspamd
+  extraVolumeMounts: []
+  extraVolumes: []
+  sidecars: []
   dkimSelector: "2023"
   existingSecret: ~
   redis:
@@ -228,6 +240,9 @@ sogo:
         serviceName: sogo
         servicePort: 8080
     secretName: tachydromos-certificate
+  extraVolumeMounts: []
+  extraVolumes: []
+  sidecars: []
   nginx:
     image:
       registry: docker.io

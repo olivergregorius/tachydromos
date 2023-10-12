@@ -67,6 +67,12 @@ spec:
             - name: certs
               mountPath: /tls
               readOnly: true
+            {{- with .Values.postfix.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- with .Values.postfix.sidecars }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       volumes:
         - name: templates
           configMap:
@@ -88,6 +94,9 @@ spec:
         - name: certs
           secret:
             secretName: {{ .Values.sogo.ingress.secretName }}
+        {{- with .Values.postfix.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
