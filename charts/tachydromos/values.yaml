@@ -492,6 +492,9 @@ sogo:
         # The cpu limit for the Memcached container.
         cpu: 100m
 
+# Map of node labels for pods assignment.
 nodeSelector: {}
+# Affinity configuration for pods assignment.
 affinity: {}
+# Tolerations configuration for pods assignment.
 tolerations: {}
