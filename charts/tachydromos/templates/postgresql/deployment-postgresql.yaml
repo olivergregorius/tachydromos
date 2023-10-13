@@ -47,7 +47,7 @@ spec:
                 name: {{ .Values.database.existingSecret | default $postgresqlEnvSecretName }}
           resources:
             {{- toYaml .Values.database.embedded.resources | nindent 12 }}
-          {{- if .Values.database.embedded.persistence.enabled or .Values.database.embedded.extraVolumeMounts }}
+          {{- if or .Values.database.embedded.persistence.enabled .Values.database.embedded.extraVolumeMounts }}
           volumeMounts:
             {{- if .Values.database.embedded.persistence.enabled }}
             - name: data
@@ -60,7 +60,7 @@ spec:
         {{- with .Values.database.embedded.sidecars }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- if .Values.database.embedded.persistence.enabled or .Values.database.embedded.extraVolumes }}
+      {{- if or .Values.database.embedded.persistence.enabled .Values.database.embedded.extraVolumes }}
       volumes:
         {{- if .Values.database.embedded.persistence.enabled }}
         - name: data

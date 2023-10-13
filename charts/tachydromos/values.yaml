@@ -60,7 +60,7 @@ ldap:
       size: 1Gi
       # Map of annotations to add to the volume claim.
       annotations: {}
-    # Existing secret for providing LDAP credentials. Must contain the values:
+    # Existing secret for providing LDAP credentials. If not set the secret will be auto generated. Must contain the values:
     # LDAP_ADMIN_PASSWORD <-- Password of LDAP admin user.
     # LDAP_BINDDN_PASSWORD <-- Password of LDAP binding user (bindDn).
     existingSecret: ~
@@ -88,47 +88,85 @@ ldap:
   binddnUsername: reader
   # LDAP bindDn attribute type, e.g. cn, mail, uid.
   binddnAttributeType: cn
-  # Existing secret for providing LDAP credentials. Must contain the following data:
+  # Existing secret for providing LDAP credentials. Must be set if ldap.embedded.enabled == false or if ldap.embedded.existingSecret is set and must contain the
+  # following data:
   # secrets: |
   #   ldapBinddnPassword <-- Password of LDAP binding user (bindDn). If ldap.embedded.existingSecret is defined it must be identical to the value of LDAP_BINDDN_PASSWORD.
   existingSecret: ~
 
+# Database configuration.
 database:
+  # Configuration for embedded PostgreSQL deployment.
   embedded:
+    # Enable embedded PostgreSQL deployment (true, false).
     enabled: true
     image:
+      # PostgreSQL image registry.
       registry: docker.io
+      # PostgreSQL image repository.
       repository: bitnami/postgresql
+      # PostgreSQL image tag.
       tag: 16.0.0
+      # PostgreSQL image pull policy (Never, Always, IfNotPresent).
       pullPolicy: IfNotPresent
+    # Map of annotations to add to the pods.
     podAnnotations: {}
+    # Pod security context configuration.
     podSecurityContext: {}
+    # Container resource configuration.
     resources:
       requests:
+        # The requested memory for the PostgreSQL container.
         memory: 256Mi
+        # The requested cpu for the PostgreSQL container.
         cpu: 200m
       limits:
+        # The memory limit for the PostgreSQL container.
         memory: 512Mi
+        # The cpu limit for the PostgreSQL container.
         cpu: 1000m
+    # Service configuration.
     service:
+      # Service type (ClusterIP, NodePort, ...).
       type: NodePort
+      # If type == NodePort set the node port explicitly instead of having it being auto-assigned.
       nodePorts:
-        psql: ""
+        psql: ~
+    # Data persistence configuration.
     persistence:
+      # Enable data persistence on a physical volume (true, false).
       enabled: false
-      storageClassName: longhorn
+      # Storage class to be used.
+      storageClassName: ~
+      # Volume access mode (ReadWriteOnce, ReadWriteMany, ReadOnlyMany, ReadWriteOncePod).
       accessModes:
         - ReadWriteOnce
+      # Volume capacity.
       size: 1Gi
-      annotations:
-        helm.sh/resource-policy: keep
+      # Map of annotations to add to the volume claim.
+      annotations: {}
+    # Existing secret for providing database credentials. If not set the secret will be auto generated. Must contain the values:
+    # POSTGRESQL_POSTGRES_PASSWORD <-- Password of the postgres user.
+    # POSTGRESQL_PASSWORD <-- Password of the user defined in database.username.
+    existingSecret: ~
+    # Additional volume mounts for the PostgreSQL container.
     extraVolumeMounts: []
+    # Additional volumes for the deployment.
     extraVolumes: []
+    # Configuration of sidecar containers running next to the PostreSQL container.
     sidecars: []
+  # PostgreSQL host, only relevant if database.embedded.enabled == false.
   host: tachydromos-postgresql
+  # PostgreSQL port, only relevant if ldap.embedded.enabled == false.
   port: 5432
+  # PostgreSQL database name.
   database: sogo
+  # PostgreSQL username.
   username: pgsogo
+  # Existing secret for providing PostgreSQL credentials. Must be set if database.embedded.enabled == false or if database.embedded.existingSecret is set and
+  # must contain the following data:
+  # secrets: |
+  #   postgresqlPassword <-- Password of PostgreSQL user. If database.embedded.existingSecret is defined it must be identical to the value of POSTGRESQL_PASSWORD.
   existingSecret: ~
 
 postfix:
