@@ -60,7 +60,7 @@ ldap:
       size: 1Gi
       # Map of annotations to add to the volume claim.
       annotations: {}
-    # Existing secret for providing LDAP credentials. If not set the secret will be auto generated. Must contain the values:
+    # Existing secret for providing LDAP credentials. If not set the secret will be auto-generated. Must contain the values:
     # LDAP_ADMIN_PASSWORD <-- Password of LDAP admin user.
     # LDAP_BINDDN_PASSWORD <-- Password of LDAP binding user (bindDn).
     existingSecret: ~
@@ -145,7 +145,7 @@ database:
       size: 1Gi
       # Map of annotations to add to the volume claim.
       annotations: {}
-    # Existing secret for providing database credentials. If not set the secret will be auto generated. Must contain the values:
+    # Existing secret for providing database credentials. If not set the secret will be auto-generated. Must contain the values:
     # POSTGRESQL_POSTGRES_PASSWORD <-- Password of the postgres user.
     # POSTGRESQL_PASSWORD <-- Password of the user defined in database.username.
     existingSecret: ~
@@ -169,33 +169,64 @@ database:
   #   postgresqlPassword <-- Password of PostgreSQL user. If database.embedded.existingSecret is defined it must be identical to the value of POSTGRESQL_PASSWORD.
   existingSecret: ~
 
+# Postfix configuration.
 postfix:
   image:
+    # Postfix image registry.
     registry: docker.io
+    # Postfix image repository.
     repository: olivergregorius/postfix
+    # Postfix image tag.
     tag: 3.8.2-alpha
+    # Postfix image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
+  # Number of desired replicas.
   replicas: 1
+  # Map of annotations to add to the pods.
   podAnnotations: {}
+  # Pod security context configuration.
   podSecurityContext: {}
+  # Container resource configuration.
   resources:
     requests:
+      # The requested memory for the Postfix container.
       memory: 32Mi
+      # The requested cpu for the Postfix container.
       cpu: 50m
     limits:
+      # The memory limit for the Postfix container.
       memory: 64Mi
+      # The cpu limit for the Postfix container.
       cpu: 100m
+  # Service configuration.
   service:
+    # Service type (ClusterIP, NodePort, ...).
     type: NodePort
+    # If type == NodePort set the node port explicitly instead of having it being auto-assigned.
     nodePorts:
       smtp: ""
       submission: ""
+  # Additional volume mounts for the Postfix container.
   extraVolumeMounts: []
+  # Additional volumes for the deployment.
   extraVolumes: []
+  # Configuration of sidecar containers running next to the Postfix container.
   sidecars: []
+  # Enable the PROXY protocol for SMTP connections (see https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address)
   enableProxyProtocol: true
+  # List of domains that do not pass the HELO/EHLO check but should be handled as valid mail senders. Example:
+  # heloWhiteList: |
+  #   mail.example.net OK
+  #   another.mail.example.com OK
   heloWhitelist: ""
-  postscreenWhitelist: ""
+  # List of IP addresses or ranges to be allowed or blocked by postscreen. Example:
+  # postscreenAccessList: |
+  #   192.168.1.0/24 permit
+  #   192.168.2.0/24 reject
+  postscreenAccessList: ""
+  # List of IP addresses that have no valid PTR record but should be handled as valid mail senders. Example:
+  # ptrWhitelist: |
+  #   1.2.3.3 OK
   ptrWhitelist: ""
 
 dovecot:

@@ -8,5 +8,5 @@ data:
   config: |
     hostname: {{ .Values.hostname }}
     heloWhitelist: {{ .Values.postfix.heloWhitelist }}
-    postscreenWhitelist: {{ .Values.postfix.postscreenWhitelist }}
+    postscreenAccessList: {{ .Values.postfix.postscreenAccessList }}
     ptrWhitelist: {{ .Values.postfix.ptrWhitelist }}
