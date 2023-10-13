@@ -265,11 +265,11 @@ dovecot:
     # Volume access mode (ReadWriteOnce, ReadWriteMany, ReadOnlyMany, ReadWriteOncePod).
     accessModes:
       - ReadWriteOnce
-      # Volume capacity.
+    # Volume capacity.
     size: 1Gi
     # Map of annotations to add to the volume claim.
     annotations: {}
-    # Additional volume mounts for the Dovecot container.
+  # Additional volume mounts for the Dovecot container.
   extraVolumeMounts: []
   # Additional volumes for the deployment.
   extraVolumes: []
@@ -284,62 +284,103 @@ dovecot:
   #   superuserPassword <-- Password of the superuser.
   existingSecret: ~
 
+# Rspamd configuration.
 rspamd:
   image:
+    # Rspamd image registry.
     registry: docker.io
+    # Rspamd image repository.
     repository: olivergregorius/rspamd
+    # Rspamd image tag.
     tag: 3.6.0-alpha
+    # Rspamd image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
+  # Map of annotations to add to the pods.
   podAnnotations: {}
+  # Pod security context configuration.
   podSecurityContext: {}
+  # Container resource configuration.
   resources:
     requests:
+      # The requested memory for the Rspamd container.
       memory: 256Mi
+      # The requested cpu for the Rspamd container.
       cpu: 100m
     limits:
+      # The memory limit for the Rspamd container.
       memory: 512Mi
+      # The cpu limit for the Rspamd container.
       cpu: 1000m
+  # Service configuration.
   service:
+    # Service type (ClusterIP, NodePort, ...).
     type: ClusterIP
+    # If type == NodePort set the node port explicitly instead of having it being auto-assigned.
     nodePorts:
       milter: ""
       webinterface: ""
+  # Data persistence configuration.
   persistence:
+    # Enable data persistence on a physical volume (true, false).
     enabled: false
-    storageClassName: longhorn
+    # Storage class to be used.
+    storageClassName: ~
+    # Volume access mode (ReadWriteOnce, ReadWriteMany, ReadOnlyMany, ReadWriteOncePod).
     accessModes:
       - ReadWriteOnce
+    # Volume capacity.
     size: 1Gi
-    annotations:
-      helm.sh/resource-policy: keep
+    # Map of annotations to add to the volume claim.
+    annotations: {}
+  # Ingress configuration.
   ingress:
+    # Enable ingress (true, false).
     enabled: true
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      cert-manager.io/cluster-issuer: zerossl-production
-    hostname: rspamd.testmail.gregorius.tech
+    # Map of annotations to add to the ingress.
+    annotations: {}
+    # Hostname setting.
+    hostname: rspamd.mail.example.org
+    # Ingress path configuration. Usually this section does not require any changes.
     paths:
       - path: /
         serviceName: rspamd
         servicePort: 11334
+    # Name of the secret for storing the TLS certificate and key.
     secretName: tachydromos-certificate-rspamd
+  # Additional volume mounts for the Rspamd container.
   extraVolumeMounts: []
+  # Additional volumes for the deployment.
   extraVolumes: []
+  # Configuration of sidecar containers running next to the Rspamd container.
   sidecars: []
+  # Selector of DKIM key.
   dkimSelector: "2023"
+  # Existing secret for providing Rspamd credentials. If not set the secret will be auto-generated. Must contain the following data:
+  # secrets: |
+  #   rspamdPassword <-- Password for access to the webinterface.
   existingSecret: ~
+  # Redis sidecar configuration.
   redis:
     image:
+      # Redis image registry.
       registry: docker.io
+      # Redis image repository.
       repository: redis
+      # Redis image tag.
       tag: 7.2.1
+      # Redis image pull policy (Never, Always, IfNotPresent).
       pullPolicy: IfNotPresent
+    # Container resource configuration.
     resources:
       requests:
+        # The requested memory for the Redis container.
         memory: 32Mi
+        # The requested cpu for the Redis container.
         cpu: 50m
       limits:
+        # The memory limit for the Redis container.
         memory: 64Mi
+        # The cpu limit for the Redis container.
         cpu: 100m
 
 sogo:
