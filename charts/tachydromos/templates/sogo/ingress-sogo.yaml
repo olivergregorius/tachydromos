@@ -13,10 +13,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - {{ .Values.sogo.ingress.hostname | default .Values.hostname }}
+        - {{ .Values.hostname }}
       secretName: {{ .Values.sogo.ingress.secretName }}
   rules:
-    - host: {{ .Values.sogo.ingress.hostname | default .Values.hostname }}
+    - host: {{ .Values.hostname }}
       http:
         paths:
           {{- range .Values.sogo.ingress.paths }}
