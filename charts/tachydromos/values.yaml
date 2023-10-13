@@ -212,7 +212,7 @@ postfix:
   extraVolumes: []
   # Configuration of sidecar containers running next to the Postfix container.
   sidecars: []
-  # Enable the PROXY protocol for SMTP connections (see https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address)
+  # Enable the PROXY protocol for SMTP connections (see https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address).
   enableProxyProtocol: true
   # List of domains that do not pass the HELO/EHLO check but should be handled as valid mail senders. Example:
   # heloWhiteList: |
@@ -229,34 +229,59 @@ postfix:
   #   1.2.3.3 OK
   ptrWhitelist: ""
 
+# Dovecot configuration.
 dovecot:
   image:
+    # Dovecot image registry.
     registry: docker.io
+    # Dovecot image repository.
     repository: olivergregorius/dovecot
+    # Dovecot image tag.
     tag: 2.3.20-alpha
+    # Dovecot image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
+  # Map of annotations to add to the pods.
   podAnnotations: {}
+  # Pod security context configuration.
   podSecurityContext: {}
+  # Container resource configuration.
   resources:
     requests:
+      # The requested memory for the Dovecot container.
       memory: 32Mi
+      # The requested cpu for the Dovecot container.
       cpu: 50m
     limits:
+      # The memory limit for the Dovecot container.
       memory: 64Mi
+      # The cpu limit for the Dovecot container.
       cpu: 100m
+  # Data persistence configuration.
   persistence:
+    # Enable data persistence on a physical volume (true, false).
     enabled: false
-    storageClassName: longhorn
+    # Storage class to be used.
+    storageClassName: ~
+    # Volume access mode (ReadWriteOnce, ReadWriteMany, ReadOnlyMany, ReadWriteOncePod).
     accessModes:
       - ReadWriteOnce
+      # Volume capacity.
     size: 1Gi
-    annotations:
-      helm.sh/resource-policy: keep
+    # Map of annotations to add to the volume claim.
+    annotations: {}
+    # Additional volume mounts for the Dovecot container.
   extraVolumeMounts: []
+  # Additional volumes for the deployment.
   extraVolumes: []
+  # Configuration of sidecar containers running next to the Dovecot container.
   sidecars: []
+  # Postmaster email address.
   postmasterEmail: postmaster@example.org
+  # Name of superuser (technical user that has the permission to send mails).
   superuserUsername: sysmail@example.org
+  # Existing secret for providing Dovecot credentials. If not set the secret will be auto-generated. Must contain the following data:
+  # secrets: |
+  #   superuserPassword <-- Password of the superuser.
   existingSecret: ~
 
 rspamd:
