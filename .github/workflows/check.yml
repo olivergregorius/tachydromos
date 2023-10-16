@@ -1,0 +1,22 @@
+name: Run Helm Chart Checks
+
+on:
+  push:
+    tags-ignore:
+      - '**'
+
+jobs:
+  helm-linting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.13.1
+
+      - name: Lint Helm Chart
+        run: |
+          helm lint charts/tachydromos --strict
