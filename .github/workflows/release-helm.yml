@@ -25,6 +25,10 @@ jobs:
         with:
           version: v3.13.1
 
+      - name: Lint Helm Chart
+        run: |
+          helm lint charts/tachydromos --strict
+
       - name: Set Release Version
         run: echo version=$(echo $GITHUB_REF | sed 's#.*/v##') >> $GITHUB_OUTPUT
         id: set_version
