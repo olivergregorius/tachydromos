@@ -1,0 +1,43 @@
+name: Release Helm Chart
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Helm Chart Repository
+        uses: actions/checkout@v4
+        with:
+          repository: olivergregorius/helm-charts
+          ref: main
+          path: helm-charts
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.13.1
+
+      - name: Set Release Version
+        run: echo version=$(echo $GITHUB_REF | sed 's#.*/v##') >> $GITHUB_OUTPUT
+        id: set_version
+
+      - name: Package Helm Chart
+        run: |
+          helm package charts/tachydromos --version ${{ steps.set_version.outputs.version }} --destination helm-charts/tachydromos
+
+      - name: Release Helm Chart
+        run: |
+          cd helm-charts
+          git config user.name "Tachydromos Helm Release Bot"
+          git config user.email olivergregorius@users.noreply.github.com
+          git add helm-charts/tachydromos
+          git commit -m "Released Tachydromos Helm chart v${{ steps.set_version.outputs.version }}"
+          git push
