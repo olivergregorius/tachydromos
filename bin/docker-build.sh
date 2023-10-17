@@ -15,14 +15,14 @@ project_path="${script_dir}/../dockerfiles/${project_name}"
 repository=$(yq -r .repository "${project_path}/properties.yml")
 tag=$(yq -r .tag "${project_path}/properties.yml")
 version=$(yq -r .version "${project_path}/properties.yml")
-arch=$(yq -r .arch "${project_path}/properties.yml")
+platforms=$(yq -r .platforms "${project_path}/properties.yml")
 
 # Build Docker image
 echo "Building Docker image ${repository}:${tag}"
 docker buildx build \
   --file "${project_path}/Dockerfile" \
   --build-arg APPVERSION="$version" \
-  --platform "$arch" \
+  --platform "$platforms" \
   --tag "${repository}:${tag}" \
   --push \
   "$project_path"

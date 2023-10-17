@@ -30,8 +30,8 @@ jobs:
           helm lint charts/tachydromos --strict
 
       - name: Set Release Version
-        run: echo version=$(echo $GITHUB_REF | sed 's#.*/v##') >> $GITHUB_OUTPUT
         id: set_version
+        run: echo version=$(echo $GITHUB_REF | sed 's#.*/v##') >> $GITHUB_OUTPUT
 
       - name: Package Helm Chart
         run: |

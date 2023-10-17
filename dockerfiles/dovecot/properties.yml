@@ -1,5 +1,6 @@
 ---
-repository: olivergregorius/dovecot
+registry: ghcr.io
+repository: olivergregorius/tachydromos-dovecot
 tag: 2.3.20-alpha
-version: 2.3.20-r10
-arch: linux/amd64,linux/arm64
+version: 2.3.20-r11
+platforms: linux/amd64,linux/arm64
