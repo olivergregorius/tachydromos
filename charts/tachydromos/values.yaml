@@ -173,11 +173,11 @@ database:
 postfix:
   image:
     # Postfix image registry.
-    registry: docker.io
+    registry: ghcr.io
     # Postfix image repository.
-    repository: olivergregorius/postfix
+    repository: olivergregorius/tachydromos-postfix
     # Postfix image tag.
-    tag: 3.8.2-alpha
+    tag: 3.8.2
     # Postfix image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
   # Number of desired replicas.
@@ -233,11 +233,11 @@ postfix:
 dovecot:
   image:
     # Dovecot image registry.
-    registry: docker.io
+    registry: ghcr.io
     # Dovecot image repository.
-    repository: olivergregorius/dovecot
+    repository: olivergregorius/tachydromos-dovecot
     # Dovecot image tag.
-    tag: 2.3.20-alpha
+    tag: 2.3.20
     # Dovecot image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
   # Map of annotations to add to the pods.
@@ -288,11 +288,11 @@ dovecot:
 rspamd:
   image:
     # Rspamd image registry.
-    registry: docker.io
+    registry: ghcr.io
     # Rspamd image repository.
-    repository: olivergregorius/rspamd
+    repository: olivergregorius/tachydromos-rspamd
     # Rspamd image tag.
-    tag: 3.6.0-alpha
+    tag: 3.6.0
     # Rspamd image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
   # Map of annotations to add to the pods.
@@ -387,11 +387,11 @@ rspamd:
 sogo:
   image:
     # SOGo image registry.
-    registry: docker.io
+    registry: ghcr.io
     # SOGo image repository.
-    repository: olivergregorius/sogo
+    repository: olivergregorius/tachydromos-sogo
     # SOGo image tag.
-    tag: 5.9.0-alpha
+    tag: 5.9.0
     # SOGo image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
   # Number of desired replicas.
