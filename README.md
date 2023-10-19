@@ -21,6 +21,11 @@ The following database engines are supported:
 
 - PostgreSQL
 
+## What does "Tachydromos" mean?
+
+"Tachydromos", or "ταχυδρόμος", is greek for "mailman" which suits very good for a mail suite on "Kubernetes", or "κυβερνήτης", which in fact is also a greek
+word translated to "captain" in english.
+
 ## Deploying the Helm chart
 
 ### Add repository
@@ -115,4 +120,34 @@ Attribute description:
 If you are about to use an externally managed database server there is not much to prepare. Just create an empty database and a user which is permitted to
 create new schemas and tables (write access).
 
-# More documentation is about to come
+## Publishing the SMTP server
+
+In order to receive mails the SMTP server (Postfix) must be published to the outside world. There are different approaches to achieve this. By default, the
+server is published using [nodeports](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport). Thus, on each of the cluster's nodes a
+port will be opened to listen for SMTP traffic. As SMTP traffic always flows on port 25 a TCP reverse proxy, e.g. HAProxy, is needed for port translation.
+Tachydromos also provides the option to use the [HAProxy PROXY-protocol](https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address)
+to preserve the client's IP address required for spam checks and sender validation.
+
+### STARTTLS SMTP encryption
+
+The SMTP server will use the same TLS server certificates as the webmail does. Thus, encrypted SMTP traffic is enabled by default.
+
+## Accessing the Rspamd webinterface
+
+The Rspamd webinterface is available under the configured ingress hostname.
+
+## Accessing Webmail
+
+[SOGo](https://www.sogo.nu) is used as webmail component for Tachydromos. It provides many groupware features such as mail-, contact- and calendar-management.
+Furthermore, it offers an in place solution for connecting via the Microsoft Exchange ActiveSync protocol - an easy way to synchronize mails, contacts and
+events with all of your devices.
+The webmail is published under the URL set as `hostname` in the Helm values.
+
+## Planned features
+
+Although Tachydromos is a useful suite of some useful components, not all possible features have been implemented, yet. Some planned features are:
+
+- Separate URLs for webmail and SMTP
+- Webinterface for management of domains and users
+- Antivirus
+- and many more
