@@ -75,10 +75,10 @@ ldap:
   # LDAP port, only relevant if ldap.embedded.enabled == false.
   port: 389
   # LDAP root DN.
-  rootDn: dc=tachydromos,dc=org
-  # LDAP user search base. Will be rendered as "userSearchBase,rootDn", e.g. ou=users,dc=tachydromos,dc=org.
+  rootDn: dc=tachydromos,dc=local
+  # LDAP user search base. Will be rendered as "userSearchBase,rootDn", e.g. ou=users,dc=tachydromos,dc=local.
   userSearchBase: ou=users
-  # LDAP domain search base. Will be rendered as "domainSearchBase,rootDn", e.g. ou=domains,dc=tachydromos,dc=org.
+  # LDAP domain search base. Will be rendered as "domainSearchBase,rootDn", e.g. ou=domains,dc=tachydromos,dc=local.
   domainSearchBase: ou=domains
   # LDAP admin username.
   adminUsername: admin

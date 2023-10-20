@@ -63,11 +63,11 @@ To enable all features, e.g. quota handling, the Tachydromos LDAP schema must be
 ### Managing domains
 
 Tachydromos requires all domains for which mails should be handled to be listed in the LDAP tree. For each domain add a new `organizationalUnit` entry under the
-DN defined as `<ldap.domainSearchBase>,<ldap.rootDn>`. The default value is `ou=domains,dc=tachydromos,dc=org`. Set the `ou` attribute to the domain name. For
+DN defined as `<ldap.domainSearchBase>,<ldap.rootDn>`. The default value is `ou=domains,dc=tachydromos,dc=local`. Set the `ou` attribute to the domain name. For
 example if the domain `example.org` should be handled, the following entry must be added:
 
 ```
-dn: ou=example.org,ou=domains,dc=tachydromos,dc=org
+dn: ou=example.org,ou=domains,dc=tachydromos,dc=local
 objectClass: organizationalUnit
 objectClass: top
 ou: example.org
@@ -76,11 +76,11 @@ ou: example.org
 ### Managing users
 
 Each user must be added to the LDAP tree. To add a new user add an `inetOrgPerson` entry with an auxiliary `mailAccount` under the DN defined as
-`<ldap.userSearchBase>.<ldap.rootDn>`. The default value is `ou=users,dc=tachydromos,dc=org`. Set the `mail` attribute to the mail address of the user. Set the
+`<ldap.userSearchBase>.<ldap.rootDn>`. The default value is `ou=users,dc=tachydromos,dc=local`. Set the `mail` attribute to the mail address of the user. Set the
 remaining attributes to suit the needs of the user. Example:
 
 ```
-dn: mail=testuser@example.org,ou=users,dc=tachydromos,dc=org
+dn: mail=testuser@example.org,ou=users,dc=tachydromos,dc=local
 objectClass: inetOrgPerson
 objectClass: mailAccount
 objectClass: organizationalPerson
