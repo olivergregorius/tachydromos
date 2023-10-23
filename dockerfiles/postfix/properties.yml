@@ -1,6 +1,6 @@
 ---
 registry: ghcr.io
 repository: olivergregorius/tachydromos-postfix
-tag: 3.8.2-alpha
+tag: 3.8.2
 version: 3.8.2-r0
 platforms: linux/amd64,linux/arm64
