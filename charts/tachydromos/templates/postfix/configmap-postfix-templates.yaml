@@ -33,7 +33,7 @@ data:
         -o smtpd_tls_security_level=may
         -o smtpd_sasl_auth_enable=yes
         -o smtpd_sasl_type=dovecot
-        -o smtpd_sasl_path=inet:dovecot:24
+        -o smtpd_sasl_path=inet:tachydromos-dovecot:3659
         -o smtpd_sasl_security_options=noanonymous
         -o smtpd_tls_auth_only=no
         -o smtpd_reject_unlisted_recipient=no
@@ -192,7 +192,7 @@ data:
     smtpd_tls_key_file               = /tls/tls.key
 
     # Local transport to mailbox
-    virtual_transport = lmtp:dovecot:24
+    virtual_transport = lmtp:tachydromos-dovecot:24
 
     # Milter
     smtpd_milters         = inet:tachydromos-rspamd:11332
