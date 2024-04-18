@@ -2,8 +2,6 @@ name: Run Helm Chart Checks
 
 on:
   push:
-    branches:
-      - main
     paths:
       - 'charts/**'
     tags-ignore:
