@@ -5,8 +5,9 @@ fullnameOverride: ""
 # Docker registry secret names as an array.
 imagePullSecrets: []
 
-# Hostname of mail server and webmail.
-# NOTE: The hostname for Rspamd is defined independently in the corresponding values section below.
+# Hostname of mail server.
+# NOTE: The hostname for Rspamd is defined independently in the respective values section below.
+# NOTE: Another hostname for webmail might be set in the respective values section below. Otherwise, the following value also applies to webmail.
 hostname: mail.example.org
 
 # LDAP configuration.
@@ -432,6 +433,8 @@ sogo:
       nginx.ingress.kubernetes.io/proxy-buffering: "on"
       nginx.ingress.kubernetes.io/proxy-buffers-number: "64"
       nginx.ingress.kubernetes.io/proxy-buffer-size: "512k"
+    # Hostname setting. If not set will default to the hostname set at the beginning of this values file.
+    hostname: ~
     # Ingress path configuration. Usually this section does not require any changes.
     paths:
       - path: /

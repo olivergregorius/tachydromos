@@ -14,9 +14,12 @@ spec:
   tls:
     - hosts:
         - {{ .Values.hostname }}
+        {{- if and (not (empty .Values.sogo.ingress.hostname)) (not (eq .Values.hostname .Values.sogo.ingress.hostname)) }}
+        - {{ .Values.sogo.ingress.hostname }}
+        {{- end }}
       secretName: {{ .Values.sogo.ingress.secretName }}
   rules:
-    - host: {{ .Values.hostname }}
+    - host: {{ .Values.sogo.ingress.hostname | default .Values.hostname }}
       http:
         paths:
           {{- range .Values.sogo.ingress.paths }}
