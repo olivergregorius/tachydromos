@@ -25,6 +25,8 @@ ldap:
       tag: 2.6.6
       # OpenLDAP image pull policy (Never, Always, IfNotPresent).
       pullPolicy: IfNotPresent
+    # Pod deployment strategy.
+    deploymentStrategy: RollingUpdate
     # Map of annotations to add to the pods.
     podAnnotations: {}
     # Pod security context configuration.
@@ -110,6 +112,8 @@ database:
       tag: 16.0.0
       # PostgreSQL image pull policy (Never, Always, IfNotPresent).
       pullPolicy: IfNotPresent
+    # Pod deployment strategy.
+    deploymentStrategy: RollingUpdate
     # Map of annotations to add to the pods.
     podAnnotations: {}
     # Pod security context configuration.
@@ -241,6 +245,8 @@ dovecot:
     tag: 2.3.20
     # Dovecot image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
+  # Pod deployment strategy.
+  deploymentStrategy: RollingUpdate
   # Map of annotations to add to the pods.
   podAnnotations: {}
   # Pod security context configuration.
@@ -296,6 +302,8 @@ rspamd:
     tag: 3.6.0
     # Rspamd image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
+  # Pod deployment strategy.
+  deploymentStrategy: RollingUpdate
   # Map of annotations to add to the pods.
   podAnnotations: {}
   # Pod security context configuration.
