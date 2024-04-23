@@ -35,6 +35,7 @@ spec:
       serviceAccountName: {{ include "tachydromos.fullname" . }}
       securityContext:
         {{- toYaml .Values.rspamd.podSecurityContext | nindent 8 }}
+      hostname: {{ .Chart.Name }}
       containers:
         - name: rspamd
           image: "{{ .Values.rspamd.image.registry }}/{{ .Values.rspamd.image.repository }}:{{ .Values.rspamd.image.tag }}"
