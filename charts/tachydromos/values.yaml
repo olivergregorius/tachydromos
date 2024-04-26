@@ -250,7 +250,9 @@ dovecot:
   # Map of annotations to add to the pods.
   podAnnotations: {}
   # Pod security context configuration.
-  podSecurityContext: {}
+  podSecurityContext:
+    fsGroup: 5000
+    fsGroupChangePolicy: OnRootMismatch
   # Container resource configuration.
   resources:
     requests:
@@ -307,7 +309,9 @@ rspamd:
   # Map of annotations to add to the pods.
   podAnnotations: {}
   # Pod security context configuration.
-  podSecurityContext: {}
+  podSecurityContext:
+    fsGroup: 101
+    fsGroupChangePolicy: OnRootMismatch
   # Container resource configuration.
   resources:
     requests:
