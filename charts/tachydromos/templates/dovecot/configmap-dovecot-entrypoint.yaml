@@ -107,12 +107,12 @@ data:
     sieveDir = workDir + 'sieve/'
     if not os.path.isdir(sieveDir):
       os.mkdir(sieveDir)
-      set_permissions(sieveDir, False, 'vmail', 'vmail', dirmode=0o700)
+      set_permissions(sieveDir, False, 'vmail', 'vmail', dirmode=0o750)
 
     sieveGlobalDir = sieveDir + 'global/'
     if not os.path.isdir(sieveGlobalDir):
       os.mkdir(sieveGlobalDir)
-      set_permissions(sieveGlobalDir, False, 'vmail', 'vmail', dirmode=0o700)
+      set_permissions(sieveGlobalDir, False, 'vmail', 'vmail', dirmode=0o750)
 
     generate_config('msmtprc.j2', '/etc/')
 
@@ -130,11 +130,11 @@ data:
     generate_config('20-lmtp.conf.j2', confdDir)
     generate_config('90-plugin.conf.j2', confdDir)
 
-    generate_config('spam-global.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o600)
-    generate_config('learn-ham.sh.j2', sieveGlobalDir, 'vmail', 'vmail', 0o700)
-    generate_config('learn-ham.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o600)
-    generate_config('learn-spam.sh.j2', sieveGlobalDir, 'vmail', 'vmail', 0o700)
-    generate_config('learn-spam.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o600)
+    generate_config('spam-global.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o640)
+    generate_config('learn-ham.sh.j2', sieveGlobalDir, 'vmail', 'vmail', 0o750)
+    generate_config('learn-ham.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o640)
+    generate_config('learn-spam.sh.j2', sieveGlobalDir, 'vmail', 'vmail', 0o750)
+    generate_config('learn-spam.sieve.j2', sieveGlobalDir, 'vmail', 'vmail', 0o640)
 
     logger.info('Setup completed, starting application...')
     os.execv('/usr/sbin/dovecot', ['dovecot', '-c', configDir + 'dovecot.conf', '-F'])

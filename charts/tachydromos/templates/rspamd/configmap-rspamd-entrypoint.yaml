@@ -102,13 +102,13 @@ data:
     set_permissions(workDir, False, 'rspamd', 'rspamd', dirmode=0o750)
     if not os.path.isdir(dkimDir):
       os.mkdir(dkimDir)
-      set_permissions(dkimDir, False, 'rspamd', 'rspamd', dirmode=0o700)
+      set_permissions(dkimDir, False, 'rspamd', 'rspamd', dirmode=0o750)
     if not os.path.isfile(dkimFilename + '.key'):
       logger.info(f'No DKIM key found, generating {dkimFilename}.key')
       generate_config('generate_dkim_key.sh.j2', '/usr/local/bin/', mode=0o755)
       subprocess.run(['/bin/sh', '/usr/local/bin/generate_dkim_key.sh'])
-      set_permissions(dkimFilename + '.key', False, 'rspamd', 'rspamd', 0o400)
-      set_permissions(dkimFilename + '.txt', False, 'rspamd', 'rspamd', 0o400)
+      set_permissions(dkimFilename + '.key', False, 'rspamd', 'rspamd', 0o440)
+      set_permissions(dkimFilename + '.txt', False, 'rspamd', 'rspamd', 0o440)
 
     generate_config('arc.conf.j2', configDir)
     generate_config('dkim_signing.conf.j2', configDir)
