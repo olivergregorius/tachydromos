@@ -29,7 +29,7 @@ data:
       SOGoSMTPServer = tachydromos-postfix:587;
       SOGoSMTPAuthenticationType = PLAIN;
       SOGoForceExternalLoginWithEmail = YES;
-      SOGoIMAPServer = imap://tachydromos-dovecot:143;
+      SOGoIMAPServer = imap://tachydromos-dovecot-imap:143;
       SOGoSieveServer = sieve://tachydromos-dovecot:4190;
       SOGoDraftsFolderName = Drafts;
       SOGoSentFolderName = Sent;
