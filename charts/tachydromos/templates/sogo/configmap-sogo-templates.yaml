@@ -21,7 +21,8 @@ data:
       WOWatchDogRequestTimeout = 60;
       SOGoMaximumPingInterval = 3540;
       SOGoMaximumSyncInterval = 3540;
-      SOGoInternalSyncInterval = 15;
+      SOGoInternalSyncInterval = 60;
+      SOGoMaximumSyncWindowSize = 100;
       SOGoMaximumSyncResponseSize = 2048;
       // Mail
       SOGoMailingMechanism = smtp;

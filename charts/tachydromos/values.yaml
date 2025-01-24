@@ -278,6 +278,13 @@ dovecot:
     size: 1Gi
     # Map of annotations to add to the volume claim.
     annotations: {}
+  # Service configuration.
+  service:
+    # Service type (ClusterIP, NodePort, ...).
+    type: ClusterIP
+    # If type == NodePort set the node port explicitly instead of having it being auto-assigned.
+    nodePorts:
+      imap: ""
   # Additional volume mounts for the Dovecot container.
   extraVolumeMounts: []
   # Additional volumes for the deployment.

@@ -14,10 +14,6 @@ spec:
       port: 24
       targetPort: lmtp
       protocol: TCP
-    - name: imap
-      port: 143
-      targetPort: imap
-      protocol: TCP
     - name: sasl
       port: 3659
       targetPort: sasl
