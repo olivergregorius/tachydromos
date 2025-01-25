@@ -82,6 +82,9 @@ spec:
             - name: entrypoint
               mountPath: /entrypoint.py
               subPath: entrypoint.py
+            - name: certs
+              mountPath: /tls
+              readOnly: true
             {{- if .Values.dovecot.persistence.enabled }}
             - name: data
               mountPath: /srv/dovecot
@@ -118,6 +121,9 @@ spec:
           configMap:
             name: {{ include "tachydromos.fullname" . }}-dovecot-entrypoint
             defaultMode: 0755
+        - name: certs
+          secret:
+            secretName: {{ .Values.sogo.ingress.secretName }}
         {{- if .Values.dovecot.persistence.enabled }}
         - name: data
           persistentVolumeClaim:

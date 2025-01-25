@@ -124,6 +124,7 @@ data:
     generate_config('10-logging.conf.j2', confdDir)
     generate_config('10-mail.conf.j2', confdDir)
     generate_config('10-master.conf.j2', confdDir)
+    generate_config('10-ssl.conf.j2', confdDir)
     generate_config('15-lda.conf.j2', confdDir)
     generate_config('15-mailboxes.conf.j2', confdDir)
     generate_config('20-imap.conf.j2', confdDir)

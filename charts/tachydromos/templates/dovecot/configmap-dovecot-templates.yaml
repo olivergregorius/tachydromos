@@ -84,6 +84,10 @@ data:
             port = 4190
         }
     }
+  10-ssl.conf.j2: |
+    ssl = yes
+    ssl_cert = </tls/tls.crt
+    ssl_key = </tls/tls.key
   15-lda.conf.j2: |
     postmaster_address = {{ `{{ postmasterEmail }}` }}
     sendmail_path      = /usr/bin/msmtp
