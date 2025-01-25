@@ -17,6 +17,13 @@ spec:
       {{- if and (eq .Values.postfix.service.type "NodePort") (not (empty .Values.postfix.service.nodePorts.smtp)) }}
       nodePort: {{ .Values.postfix.service.nodePorts.smtp }}
       {{- end }}
+    - name: smtps
+      port: 465
+      targetPort: smtps
+      protocol: TCP
+      {{- if and (eq .Values.postfix.service.type "NodePort") (not (empty .Values.postfix.service.nodePorts.smtps)) }}
+      nodePort: {{ .Values.postfix.service.nodePorts.smtps }}
+      {{- end }}
     - name: submission
       port: 587
       targetPort: submission

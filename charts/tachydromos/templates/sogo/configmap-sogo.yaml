@@ -6,5 +6,5 @@ metadata:
     {{- include "tachydromos.labels" . | nindent 4 }}
 data:
   config: |
-    workerCount: 6
-    workerMemLimitMb: 256
+    workerCount: {{ .Values.sogo.workerCount }}
+    workerMemLimitMb: {{ .Values.sogo.workerMemoryLimitMb }}

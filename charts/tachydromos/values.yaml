@@ -210,6 +210,7 @@ postfix:
     # If type == NodePort set the node port explicitly instead of having it being auto-assigned.
     nodePorts:
       smtp: ""
+      smtps: ""
       submission: ""
   # Additional volume mounts for the Postfix container.
   extraVolumeMounts: []
@@ -285,6 +286,7 @@ dovecot:
     # If type == NodePort set the node port explicitly instead of having it being auto-assigned.
     nodePorts:
       imap: ""
+      imaps: ""
   # Additional volume mounts for the Dovecot container.
   extraVolumeMounts: []
   # Additional volumes for the deployment.
@@ -513,6 +515,10 @@ sogo:
         memory: 64Mi
         # The cpu limit for the Memcached container.
         cpu: 100m
+  # Worker count
+  workerCount: 6
+  # Worker memory limit in MB
+  workerMemoryLimitMb: 256
 
 # Map of node labels for pods assignment.
 nodeSelector: {}

@@ -53,6 +53,9 @@ spec:
             - name: imap
               containerPort: 143
               protocol: TCP
+            - name: imaps
+              containerPort: 993
+              protocol: TCP
             - name: sasl
               containerPort: 3659
               protocol: TCP

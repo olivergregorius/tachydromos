@@ -44,6 +44,9 @@ spec:
             - name: smtp
               containerPort: {{ ternary 26 25 .Values.postfix.enableProxyProtocol }}
               protocol: TCP
+            - name: smtps
+              containerPort: 465
+              protocol: TCP
             - name: submission
               containerPort: 587
               protocol: TCP
