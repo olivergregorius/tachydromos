@@ -1,6 +1,6 @@
 ---
 registry: ghcr.io
 repository: olivergregorius/tachydromos-sogo
-tag: 5.12.1
+tag: 5.12.1-beta
 version: 5.12.1
 platforms: linux/amd64,linux/arm64
