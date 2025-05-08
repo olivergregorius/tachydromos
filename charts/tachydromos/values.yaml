@@ -182,7 +182,7 @@ postfix:
     # Postfix image repository.
     repository: olivergregorius/tachydromos-postfix
     # Postfix image tag.
-    tag: 3.8.2
+    tag: 3.9.4-beta
     # Postfix image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
   # Number of desired replicas.
@@ -243,7 +243,7 @@ dovecot:
     # Dovecot image repository.
     repository: olivergregorius/tachydromos-dovecot
     # Dovecot image tag.
-    tag: 2.3.20
+    tag: 2.3.21-beta
     # Dovecot image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
   # Pod deployment strategy.
@@ -310,7 +310,7 @@ rspamd:
     # Rspamd image repository.
     repository: olivergregorius/tachydromos-rspamd
     # Rspamd image tag.
-    tag: 3.6.0
+    tag: 3.10.2-beta
     # Rspamd image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
   # Pod deployment strategy.
@@ -358,6 +358,8 @@ rspamd:
   ingress:
     # Enable ingress (true, false).
     enabled: true
+    # Ingress class name
+    ingressClassName: nginx
     # Map of annotations to add to the ingress.
     annotations: {}
     # Hostname setting.
@@ -413,7 +415,7 @@ sogo:
     # SOGo image repository.
     repository: olivergregorius/tachydromos-sogo
     # SOGo image tag.
-    tag: 5.9.0
+    tag: 5.12.1-beta
     # SOGo image pull policy (Never, Always, IfNotPresent).
     pullPolicy: Always
   # Number of desired replicas.
@@ -447,6 +449,8 @@ sogo:
   ingress:
     # Enable ingress (true, false).
     enabled: true
+    # Ingress class name
+    ingressClassName: nginx
     # Map of annotations to add to the ingress. Recommended annotations are already present.
     annotations:
       nginx.ingress.kubernetes.io/app-root: /SOGo
