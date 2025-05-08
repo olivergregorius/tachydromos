@@ -1,13 +1,13 @@
-ARG LIBWBXML_VERSION=0.11.8
+ARG LIBWBXML_VERSION=0.11.10
 ARG APPVERSION
 
-FROM debian:bullseye-slim AS builder
+FROM debian:bookworm-slim AS builder
 ENV DEBIAN_FRONTEND='noninteractive'
 ARG LIBWBXML_VERSION
 ARG APPVERSION
 ARG TARGETARCH
 
-RUN echo 'deb http://deb.debian.org/debian bullseye-backports main' >> /etc/apt/sources.list \
+RUN echo 'deb http://deb.debian.org/debian bookworm-backports main' >> /etc/apt/sources.list \
     && apt update && apt install -y \
     git \
     unzip \
@@ -31,7 +31,9 @@ RUN echo 'deb http://deb.debian.org/debian bullseye-backports main' >> /etc/apt/
     liblasso3-dev \
     libzip-dev \
     libytnef0-dev \
-    python
+    liboath-dev \
+    python3 \
+    && ln -s /usr/bin/python3 /usr/bin/python
 
 # libwbxml2-dev
 RUN mkdir /sogobuild && cd /sogobuild \
@@ -40,6 +42,7 @@ RUN mkdir /sogobuild && cd /sogobuild \
     && mkdir build && cd build \
     && cmake -DCMAKE_INSTALL_PREFIX=/usr .. \
     && make \
+    && make install \
     && for PKGNAME in 'libwbxml2-0' 'libwbxml2-dev'; do checkinstall \
         --default \
         --install=no \
@@ -72,7 +75,7 @@ RUN cd /sogobuild \
     && dpkg-buildpackage -b \
     && cd /sogobuild && rm -r sogo
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 ENV DEBIAN_FRONTEND='noninteractive'
 ARG LIBWBXML_VERSION
 ARG APPVERSION
@@ -87,7 +90,7 @@ RUN apt update && apt install -y \
     python3-pip \
     rsync
 
-RUN pip3 install jinja2 pyyaml
+RUN pip3 install jinja2 pyyaml --break-system-packages
 
 COPY --from=builder /sogobuild/libwbxml2-0_${LIBWBXML_VERSION}-1_${TARGETARCH}.deb /sogopackages/
 COPY --from=builder /sogobuild/libsope*.deb /sogopackages/
