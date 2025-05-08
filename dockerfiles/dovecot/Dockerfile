@@ -12,7 +12,7 @@ RUN apk add --update-cache \
     py3-pip \
     && rm -rf /var/cache/apk/*
 
-RUN pip3 install jinja2 pyyaml \
+RUN pip3 install jinja2 pyyaml --break-system-packages \
     && addgroup -g 5000 -S vmail \
     && adduser -u 5000 -h /srv/dovecot -G vmail -S vmail \
     && rm -r /etc/dovecot/conf.d/*
