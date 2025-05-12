@@ -8,7 +8,7 @@ data:
   # /etc/dovecot/
   dovecot.conf.j2: |
     protocols              = imap lmtp sieve
-    login_trusted_networks = 10.42.0.0/16
+    login_trusted_networks = {{ `{{ loginTrustedNetworks }}` }}
 
     !include conf.d/*.conf
   dovecot-ldap.conf.j2: |

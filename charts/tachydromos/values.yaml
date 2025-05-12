@@ -184,7 +184,7 @@ postfix:
     # Postfix image tag.
     tag: 3.9.4-beta
     # Postfix image pull policy (Never, Always, IfNotPresent).
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   # Number of desired replicas.
   replicas: 1
   # Map of annotations to add to the pods.
@@ -245,7 +245,7 @@ dovecot:
     # Dovecot image tag.
     tag: 2.3.21-beta
     # Dovecot image pull policy (Never, Always, IfNotPresent).
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   # Pod deployment strategy.
   deploymentStrategy: RollingUpdate
   # Map of annotations to add to the pods.
@@ -297,6 +297,8 @@ dovecot:
   postmasterEmail: postmaster@example.org
   # Name of superuser (technical user that has the permission to send mails).
   superuserUsername: sysmail@example.org
+  # Space separated list of trusted subnets for allowing plaintext login
+  loginTrustedNetworks: 10.42.0.0/16
   # Existing secret for providing Dovecot credentials. If not set the secret will be auto-generated. Must contain the following data:
   # secrets: |
   #   superuserPassword <-- Password of the superuser.
@@ -312,7 +314,7 @@ rspamd:
     # Rspamd image tag.
     tag: 3.10.2-beta
     # Rspamd image pull policy (Never, Always, IfNotPresent).
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   # Pod deployment strategy.
   deploymentStrategy: RollingUpdate
   # Map of annotations to add to the pods.
@@ -417,7 +419,7 @@ sogo:
     # SOGo image tag.
     tag: 5.12.1-beta
     # SOGo image pull policy (Never, Always, IfNotPresent).
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   # Number of desired replicas.
   replicas: 1
   # Map of annotations to add to the pods.
