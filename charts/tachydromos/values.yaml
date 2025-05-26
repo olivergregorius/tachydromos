@@ -246,6 +246,8 @@ dovecot:
     tag: 2.3.21-beta
     # Dovecot image pull policy (Never, Always, IfNotPresent).
     pullPolicy: IfNotPresent
+  # Number of desired replicas.
+  replicas: 1
   # Pod deployment strategy.
   deploymentStrategy: RollingUpdate
   # Map of annotations to add to the pods.
@@ -315,6 +317,8 @@ rspamd:
     tag: 3.10.2-beta
     # Rspamd image pull policy (Never, Always, IfNotPresent).
     pullPolicy: IfNotPresent
+  # Number of desired replicas.
+  replicas: 1
   # Pod deployment strategy.
   deploymentStrategy: RollingUpdate
   # Map of annotations to add to the pods.
