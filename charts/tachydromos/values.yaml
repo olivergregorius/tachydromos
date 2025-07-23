@@ -219,7 +219,10 @@ postfix:
   # Configuration of sidecar containers running next to the Postfix container.
   sidecars: []
   # Enable the PROXY protocol for SMTP connections (see https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address).
-  enableProxyProtocol: true
+  enableProxyProtocol:
+    smtp: true
+    smtps: true
+    submission: true
   # List of domains that do not pass the HELO/EHLO check but should be handled as valid mail senders. Example:
   # heloWhiteList: |
   #   mail.example.net OK
