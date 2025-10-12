@@ -296,8 +296,7 @@ data:
     postscreen_blacklist_action = drop
     postscreen_greet_action     = drop
     postscreen_dnsbl_threshold  = 2
-    postscreen_dnsbl_sites      = ix.dnsbl.manitu.net*2
-                                  zen.spamhaus.org*2
+    postscreen_dnsbl_sites      = zen.spamhaus.org*2
     postscreen_dnsbl_action     = drop
 
     # LDAP lookups
