@@ -363,10 +363,30 @@ rspamd:
     size: 1Gi
     # Map of annotations to add to the volume claim.
     annotations: {}
+  # HTTPRoute configuration.
+  httproute:
+    enabled: false
+    # Gateway references. Specify which Gateway(s) should handle this route.
+    parentRefs: []
+    ## Example:
+    # - name: gateway-name
+    #   namespace: gateway-namespace
+    #   # Optional fields with defaults:
+    #   # group: gateway.networking.k8s.io  # default
+    #   # kind: Gateway                      # default
+    #   # sectionName: https                 # optional, targets a specific listener
+    # Hostname setting.
+    hostname: rspamd.mail.example.org
+    # Default path.
+    path: /
+    # Path match type. (Options: "Exact", "PathPrefix")
+    pathType: PathPrefix
+    #  Map of annotations to add to the HTTPRoute.
+    annotations: {}
   # Ingress configuration.
   ingress:
     # Enable ingress (true, false).
-    enabled: true
+    enabled: false
     # Ingress class name
     ingressClassName: nginx
     # Map of annotations to add to the ingress.
@@ -454,10 +474,30 @@ sogo:
     # If type == NodePort set the node port explicitly instead of having it being auto-assigned.
     nodePorts:
       http: ""
+  # HTTPRoute configuration.
+  httproute:
+    enabled: true
+    # Gateway references. Specify which Gateway(s) should handle this route.
+    parentRefs: []
+    ## Example:
+    # - name: gateway-name
+    #   namespace: gateway-namespace
+    #   # Optional fields with defaults:
+    #   # group: gateway.networking.k8s.io  # default
+    #   # kind: Gateway                      # default
+    #   # sectionName: https                 # optional, targets a specific listener
+    # Hostname setting.
+    hostname: ~
+    # Default path.
+    path: /
+    # Path match type. (Options: "Exact", "PathPrefix")
+    pathType: PathPrefix
+    #  Map of annotations to add to the HTTPRoute.
+    annotations: {}
   # Ingress configuration.
   ingress:
     # Enable ingress (true, false).
-    enabled: true
+    enabled: false
     # Ingress class name
     ingressClassName: nginx
     # Map of annotations to add to the ingress. Recommended annotations are already present.

@@ -9,6 +9,8 @@ on:
   release:
     types:
       - prereleased
+    paths:
+      - 'dockerfiles/*/properties.yml'
 
 jobs:
   setup:
