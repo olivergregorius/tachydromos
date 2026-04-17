@@ -488,10 +488,6 @@ sogo:
     #   # sectionName: https                 # optional, targets a specific listener
     # Hostname setting.
     hostname: ~
-    # Default path.
-    path: /
-    # Path match type. (Options: "Exact", "PathPrefix")
-    pathType: PathPrefix
     #  Map of annotations to add to the HTTPRoute.
     annotations: {}
   # Ingress configuration.
