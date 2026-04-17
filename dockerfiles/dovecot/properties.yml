@@ -3,4 +3,4 @@ registry: ghcr.io
 repository: olivergregorius/tachydromos-dovecot
 tag: 2.4.3
 version: 2.4.3-r1
-platforms: linux/amd64,linux/arm641
+platforms: linux/amd64,linux/arm64
