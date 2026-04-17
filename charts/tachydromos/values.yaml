@@ -182,7 +182,7 @@ postfix:
     # Postfix image repository.
     repository: olivergregorius/tachydromos-postfix
     # Postfix image tag.
-    tag: 3.9.4-beta
+    tag: 3.10.8
     # Postfix image pull policy (Never, Always, IfNotPresent).
     pullPolicy: IfNotPresent
   # Number of desired replicas.
@@ -246,7 +246,7 @@ dovecot:
     # Dovecot image repository.
     repository: olivergregorius/tachydromos-dovecot
     # Dovecot image tag.
-    tag: 2.3.21-beta
+    tag: 2.4.3
     # Dovecot image pull policy (Never, Always, IfNotPresent).
     pullPolicy: IfNotPresent
   # Number of desired replicas.
@@ -317,7 +317,7 @@ rspamd:
     # Rspamd image repository.
     repository: olivergregorius/tachydromos-rspamd
     # Rspamd image tag.
-    tag: 3.10.2-beta
+    tag: 3.14.0
     # Rspamd image pull policy (Never, Always, IfNotPresent).
     pullPolicy: IfNotPresent
   # Number of desired replicas.
@@ -424,7 +424,7 @@ sogo:
     # SOGo image repository.
     repository: olivergregorius/tachydromos-sogo
     # SOGo image tag.
-    tag: 5.12.1-beta
+    tag: 5.12.6
     # SOGo image pull policy (Never, Always, IfNotPresent).
     pullPolicy: IfNotPresent
   # Number of desired replicas.
