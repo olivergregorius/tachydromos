@@ -246,7 +246,7 @@ dovecot:
     # Dovecot image repository.
     repository: olivergregorius/tachydromos-dovecot
     # Dovecot image tag.
-    tag: 2.4.3-r0
+    tag: 2.3.21-beta
     # Dovecot image pull policy (Never, Always, IfNotPresent).
     pullPolicy: IfNotPresent
   # Number of desired replicas.
