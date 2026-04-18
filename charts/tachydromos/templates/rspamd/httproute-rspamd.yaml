@@ -32,6 +32,6 @@ spec:
         type: {{ .Values.rspamd.httproute.pathType | default "PathPrefix" }}
         value: {{ .Values.rspamd.httproute.path | default "/" }}
     backendRefs:
-    - name: rspamd
+    - name: {{ include "tachydromos.fullname" . }}-rspamd
       port: 11334
 {{- end }}

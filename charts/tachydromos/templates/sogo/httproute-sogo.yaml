@@ -46,6 +46,6 @@ spec:
           type: PathPrefix
           value: /SOGo
     backendRefs:
-    - name: sogo
+    - name: {{ include "tachydromos.fullname" . }}-sogo
       port: 8080
 {{- end }}
