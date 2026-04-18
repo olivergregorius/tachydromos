@@ -246,7 +246,7 @@ dovecot:
     # Dovecot image repository.
     repository: olivergregorius/tachydromos-dovecot
     # Dovecot image tag.
-    tag: 2.4.3
+    tag: 2.4.3-r0
     # Dovecot image pull policy (Never, Always, IfNotPresent).
     pullPolicy: IfNotPresent
   # Number of desired replicas.
@@ -476,7 +476,7 @@ sogo:
       http: ""
   # HTTPRoute configuration.
   httproute:
-    enabled: true
+    enabled: false
     # Gateway references. Specify which Gateway(s) should handle this route.
     parentRefs: []
     ## Example:

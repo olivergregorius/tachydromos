@@ -41,6 +41,10 @@ spec:
           type: ReplaceFullPath
           replaceFullPath: /SOGo
         statusCode: 302
+  - matches:
+      - path:
+          type: PathPrefix
+          value: /SOGo
     backendRefs:
     - name: sogo
       port: 8080
