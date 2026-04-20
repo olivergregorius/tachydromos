@@ -1,6 +1,6 @@
 ---
 registry: ghcr.io
 repository: olivergregorius/tachydromos-rspamd
-tag: 3.6.0
-version: 3.6-r1
+tag: 3.14.0
+version: 3.14.0-r0
 platforms: linux/amd64,linux/arm64

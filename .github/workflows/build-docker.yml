@@ -6,6 +6,11 @@ on:
       - main
     paths:
       - 'dockerfiles/*/properties.yml'
+  release:
+    types:
+      - prereleased
+    paths:
+      - 'dockerfiles/*/properties.yml'
 
 jobs:
   setup:

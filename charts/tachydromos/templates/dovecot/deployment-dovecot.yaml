@@ -8,7 +8,7 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.dovecot.replicas }}
   strategy:
     type: {{ .Values.dovecot.deploymentStrategy }}
   selector:

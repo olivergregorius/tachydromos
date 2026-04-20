@@ -182,9 +182,9 @@ postfix:
     # Postfix image repository.
     repository: olivergregorius/tachydromos-postfix
     # Postfix image tag.
-    tag: 3.8.2
+    tag: 3.10.8
     # Postfix image pull policy (Never, Always, IfNotPresent).
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   # Number of desired replicas.
   replicas: 1
   # Map of annotations to add to the pods.
@@ -219,7 +219,10 @@ postfix:
   # Configuration of sidecar containers running next to the Postfix container.
   sidecars: []
   # Enable the PROXY protocol for SMTP connections (see https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address).
-  enableProxyProtocol: true
+  enableProxyProtocol:
+    smtp: true
+    smtps: true
+    submission: true
   # List of domains that do not pass the HELO/EHLO check but should be handled as valid mail senders. Example:
   # heloWhiteList: |
   #   mail.example.net OK
@@ -243,9 +246,11 @@ dovecot:
     # Dovecot image repository.
     repository: olivergregorius/tachydromos-dovecot
     # Dovecot image tag.
-    tag: 2.3.20
+    tag: 2.3.21-beta
     # Dovecot image pull policy (Never, Always, IfNotPresent).
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
+  # Number of desired replicas.
+  replicas: 1
   # Pod deployment strategy.
   deploymentStrategy: RollingUpdate
   # Map of annotations to add to the pods.
@@ -297,6 +302,8 @@ dovecot:
   postmasterEmail: postmaster@example.org
   # Name of superuser (technical user that has the permission to send mails).
   superuserUsername: sysmail@example.org
+  # Space separated list of trusted subnets for allowing plaintext login
+  loginTrustedNetworks: 10.42.0.0/16
   # Existing secret for providing Dovecot credentials. If not set the secret will be auto-generated. Must contain the following data:
   # secrets: |
   #   superuserPassword <-- Password of the superuser.
@@ -310,9 +317,11 @@ rspamd:
     # Rspamd image repository.
     repository: olivergregorius/tachydromos-rspamd
     # Rspamd image tag.
-    tag: 3.6.0
+    tag: 3.14.0
     # Rspamd image pull policy (Never, Always, IfNotPresent).
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
+  # Number of desired replicas.
+  replicas: 1
   # Pod deployment strategy.
   deploymentStrategy: RollingUpdate
   # Map of annotations to add to the pods.
@@ -354,10 +363,32 @@ rspamd:
     size: 1Gi
     # Map of annotations to add to the volume claim.
     annotations: {}
+  # HTTPRoute configuration.
+  httproute:
+    enabled: false
+    # Gateway references. Specify which Gateway(s) should handle this route.
+    parentRefs: []
+    ## Example:
+    # - name: gateway-name
+    #   namespace: gateway-namespace
+    #   # Optional fields with defaults:
+    #   # group: gateway.networking.k8s.io  # default
+    #   # kind: Gateway                      # default
+    #   # sectionName: https                 # optional, targets a specific listener
+    # Hostname setting.
+    hostname: rspamd.mail.example.org
+    # Default path.
+    path: /
+    # Path match type. (Options: "Exact", "PathPrefix")
+    pathType: PathPrefix
+    #  Map of annotations to add to the HTTPRoute.
+    annotations: {}
   # Ingress configuration.
   ingress:
     # Enable ingress (true, false).
-    enabled: true
+    enabled: false
+    # Ingress class name
+    ingressClassName: nginx
     # Map of annotations to add to the ingress.
     annotations: {}
     # Hostname setting.
@@ -413,9 +444,9 @@ sogo:
     # SOGo image repository.
     repository: olivergregorius/tachydromos-sogo
     # SOGo image tag.
-    tag: 5.9.0
+    tag: 5.12.6
     # SOGo image pull policy (Never, Always, IfNotPresent).
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   # Number of desired replicas.
   replicas: 1
   # Map of annotations to add to the pods.
@@ -443,10 +474,28 @@ sogo:
     # If type == NodePort set the node port explicitly instead of having it being auto-assigned.
     nodePorts:
       http: ""
+  # HTTPRoute configuration.
+  httproute:
+    enabled: false
+    # Gateway references. Specify which Gateway(s) should handle this route.
+    parentRefs: []
+    ## Example:
+    # - name: gateway-name
+    #   namespace: gateway-namespace
+    #   # Optional fields with defaults:
+    #   # group: gateway.networking.k8s.io  # default
+    #   # kind: Gateway                      # default
+    #   # sectionName: https                 # optional, targets a specific listener
+    # Hostname setting.
+    hostname: ~
+    #  Map of annotations to add to the HTTPRoute.
+    annotations: {}
   # Ingress configuration.
   ingress:
     # Enable ingress (true, false).
-    enabled: true
+    enabled: false
+    # Ingress class name
+    ingressClassName: nginx
     # Map of annotations to add to the ingress. Recommended annotations are already present.
     annotations:
       nginx.ingress.kubernetes.io/app-root: /SOGo

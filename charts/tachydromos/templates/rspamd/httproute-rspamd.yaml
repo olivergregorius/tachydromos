@@ -1,0 +1,37 @@
+{{- if .Values.rspamd.httproute.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-rspamd
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+  {{- with .Values.rspamd.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.rspamd.httproute.parentRefs }}
+  parentRefs:
+    {{- range . }}
+    - group: {{ .group | default "gateway.networking.k8s.io" }}
+      kind: {{ .kind | default "Gateway" }}
+      name: {{ .name }}
+      {{- with .namespace }}
+      namespace: {{ . }}
+      {{- end }}
+      {{- with .sectionName }}
+      sectionName: {{ . }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  hostnames:
+    - {{ .Values.rspamd.httproute.hostname }}
+  rules:
+  - matches:
+    - path:
+        type: {{ .Values.rspamd.httproute.pathType | default "PathPrefix" }}
+        value: {{ .Values.rspamd.httproute.path | default "/" }}
+    backendRefs:
+    - name: {{ include "tachydromos.fullname" . }}-rspamd
+      port: 11334
+{{- end }}

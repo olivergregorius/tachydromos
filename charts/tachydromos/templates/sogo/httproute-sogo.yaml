@@ -1,0 +1,51 @@
+{{- if .Values.sogo.httproute.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "tachydromos.fullname" . }}-sogo
+  labels:
+    {{- include "tachydromos.labels" . | nindent 4 }}
+  {{- with .Values.sogo.httproute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.sogo.httproute.parentRefs }}
+  parentRefs:
+    {{- range . }}
+    - group: {{ .group | default "gateway.networking.k8s.io" }}
+      kind: {{ .kind | default "Gateway" }}
+      name: {{ .name }}
+      {{- with .namespace }}
+      namespace: {{ . }}
+      {{- end }}
+      {{- with .sectionName }}
+      sectionName: {{ . }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  hostnames:
+    - {{ .Values.hostname }}
+    {{- if and (not (empty .Values.sogo.httproute.hostname)) (not (eq .Values.hostname .Values.sogo.httproute.hostname)) }}
+    - {{ .Values.sogo.httproute.hostname }}
+    {{- end }}
+  rules:
+  - matches:
+    - path:
+        type: Exact
+        value: /
+    filters:
+    - type: RequestRedirect
+      requestRedirect:
+        path:
+          type: ReplaceFullPath
+          replaceFullPath: /SOGo/
+        statusCode: 302
+  - matches:
+      - path:
+          type: PathPrefix
+          value: /
+    backendRefs:
+    - name: {{ include "tachydromos.fullname" . }}-sogo
+      port: 8080
+{{- end }}

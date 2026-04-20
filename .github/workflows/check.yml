@@ -6,6 +6,9 @@ on:
       - 'charts/**'
     tags-ignore:
       - '**'
+  release:
+    types:
+      - prereleased
 
 jobs:
   helm-linting:

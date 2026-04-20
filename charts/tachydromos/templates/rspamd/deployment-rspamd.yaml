@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "tachydromos.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.rspamd.replicas }}
   strategy:
     type: {{ .Values.rspamd.deploymentStrategy }}
   selector:
